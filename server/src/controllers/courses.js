@@ -5,6 +5,7 @@ import {
   fetchPlaylistItems,
   fetchVideoDurations,
 } from '../services/youtube.js';
+import { generateVideoOrder } from '../services/openrouter.js';
 
 export async function getAllCourses(req, res, next) {
   try {
@@ -114,9 +115,32 @@ export async function createCourse(req, res, next) {
       `;
     }
 
-    const videos = await sql`
+    let videos = await sql`
       SELECT * FROM videos WHERE course_id = ${course.id} ORDER BY order_index
     `;
+
+    if (videos.length > 1) {
+      try {
+        const correctOrder = await generateVideoOrder(videos.map(v => v.title));
+        if (Array.isArray(correctOrder) && correctOrder.length === videos.length) {
+          for (let newIdx = 0; newIdx < correctOrder.length; newIdx++) {
+            const originalIdx = correctOrder[newIdx];
+            const video = videos[originalIdx];
+            if (video) {
+              await sql`
+                UPDATE videos SET order_index = ${newIdx}
+                WHERE id = ${video.id} AND course_id = ${course.id}
+              `;
+            }
+          }
+          videos = await sql`
+            SELECT * FROM videos WHERE course_id = ${course.id} ORDER BY order_index
+          `;
+        }
+      } catch (err) {
+        console.error('Auto AI sort failed:', err);
+      }
+    }
 
     res.status(201).json({
       course: { ...course, video_count: videos.length, watched_count: 0 },

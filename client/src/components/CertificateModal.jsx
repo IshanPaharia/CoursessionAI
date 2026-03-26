@@ -44,15 +44,14 @@ function CertificateCard({ certificate }) {
           }
           .cert::before {
             content: ''; position: absolute; inset: 10px;
-            border: 1px solid #a855f7; pointer-events: none;
+            border: 1px solid #f59e0b; pointer-events: none;
           }
           .cert h1 { font-family: 'Playfair Display', serif; font-size: 42px; color: #1a1a2e; margin-bottom: 12px; }
           .cert .sub { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 30px; }
-          .cert .name { font-size: 28px; font-weight: 600; color: #a855f7; margin: 20px 0 8px; }
+          .cert .name { font-size: 28px; font-weight: 600; color: #f59e0b; margin: 20px 0 8px; }
           .cert .course { font-size: 22px; font-weight: 600; color: #1a1a2e; margin-bottom: 8px; }
           .cert .date { font-size: 14px; color: #666; margin-top: 24px; }
           .cert .id { font-size: 11px; color: #aaa; margin-top: 24px; }
-          .cert .award { width: 60px; margin: 0 auto 16px; }
           @media print { body { background: white; } .cert { border: 3px solid #1a1a2e; } }
         </style>
       </head>
@@ -75,22 +74,22 @@ function CertificateCard({ certificate }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {/* Certificate preview */}
-      <div className="rounded-xl border-2 border-purple-500/30 bg-gradient-to-br from-[#111118] to-[#15151f] px-8 py-10 text-center">
-        <p className="text-xs font-medium uppercase tracking-[4px] text-gray-500">
+      <div className="rounded-xl border-2 border-amber-500/30 px-6 sm:px-8 py-8 sm:py-10 text-center" style={{ background: 'linear-gradient(135deg, rgba(17, 17, 24, 1), rgba(21, 21, 31, 1))' }}>
+        <p className="text-[10px] sm:text-xs font-medium uppercase tracking-[4px] text-gray-500">
           Certificate of Completion
         </p>
-        <h2 className="mt-3 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-3xl font-bold text-transparent">
+        <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-gradient">
           CoursessionAI
         </h2>
-        <div className="mx-auto my-6 h-px w-32 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+        <div className="mx-auto my-5 sm:my-6 h-px w-32 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
         <p className="text-sm text-gray-400">This certifies that</p>
-        <p className="mt-2 text-xl font-semibold text-white">
+        <p className="mt-2 text-lg sm:text-xl font-semibold text-white">
           {certificate.display_name || certificate.email}
         </p>
         <p className="mt-3 text-sm text-gray-400">has successfully completed</p>
-        <p className="mt-2 text-lg font-semibold text-purple-300">
+        <p className="mt-2 text-base sm:text-lg font-semibold text-amber-300">
           {certificate.course_title}
         </p>
         <p className="mt-4 text-xs text-gray-500">{formatDate(certificate.completed_at)}</p>
@@ -100,17 +99,17 @@ function CertificateCard({ certificate }) {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={handlePrint}
-          className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-sm font-medium text-gray-300 transition-colors hover:bg-white/5"
+          className="btn-secondary flex-1 py-2.5 justify-center"
         >
           <Download className="h-4 w-4" />
           Print / Save PDF
         </button>
         <button
           onClick={handleShare}
-          className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="btn-primary flex-1 py-2.5 justify-center"
         >
           <Share2 className="h-4 w-4" />
           Share
@@ -131,26 +130,26 @@ export default function CertificateModal({ isOpen, onClose, courseId, courseTitl
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#111118] p-6 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 p-5 sm:p-6 shadow-2xl" style={{ backgroundColor: 'var(--bg-secondary)' }}>
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-purple-400" />
+            <Award className="h-5 w-5 text-amber-400" />
             <h2 className="text-lg font-bold text-white">Certificate</h2>
           </div>
-          <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:text-white">
+          <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:text-white transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-purple-400" />
+            <Loader2 className="h-6 w-6 animate-spin text-amber-400" />
           </div>
         ) : certificate ? (
           <CertificateCard certificate={certificate} />
         ) : isComplete ? (
           <div className="text-center py-8">
-            <Award className="mx-auto mb-4 h-16 w-16 text-purple-400/50" />
+            <Award className="mx-auto mb-4 h-16 w-16 text-amber-400/50" />
             <h3 className="text-lg font-semibold text-white">Congratulations! 🎉</h3>
             <p className="mt-1 text-sm text-gray-400">
               You've completed <strong className="text-white">{courseTitle}</strong>
@@ -158,7 +157,7 @@ export default function CertificateModal({ isOpen, onClose, courseId, courseTitl
             <button
               onClick={() => generateCert.mutate(courseId)}
               disabled={generateCert.isPending}
-              className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="mt-6 btn-primary w-full py-3 justify-center disabled:opacity-50"
             >
               {generateCert.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -182,7 +181,7 @@ export default function CertificateModal({ isOpen, onClose, courseId, courseTitl
             <p className="mt-1 text-sm text-gray-400">
               Complete all videos to earn your certificate.
             </p>
-            <p className="mt-3 text-sm font-medium text-purple-400">{Math.round(progress)}% done</p>
+            <p className="mt-3 text-sm font-medium text-amber-400">{Math.round(progress)}% done</p>
           </div>
         )}
       </div>

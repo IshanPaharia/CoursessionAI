@@ -10,9 +10,15 @@ const ICONS = {
 };
 
 const COLORS = {
-  success: 'border-green-500/20 bg-green-500/10 text-green-400',
-  error: 'border-red-500/20 bg-red-500/10 text-red-400',
-  info: 'border-purple-500/20 bg-purple-500/10 text-purple-400',
+  success: 'border-emerald-500/20 text-emerald-400',
+  error: 'border-red-500/20 text-red-400',
+  info: 'border-amber-500/20 text-amber-400',
+};
+
+const BG = {
+  success: 'rgba(16, 185, 129, 0.1)',
+  error: 'rgba(239, 68, 68, 0.1)',
+  info: 'rgba(251, 146, 60, 0.1)',
 };
 
 function ToastItem({ toast, onRemove }) {
@@ -25,7 +31,8 @@ function ToastItem({ toast, onRemove }) {
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm animate-in slide-in-from-right ${COLORS[toast.type]}`}
+      className={`flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-xl slide-in-from-right ${COLORS[toast.type]}`}
+      style={{ backgroundColor: BG[toast.type] }}
     >
       <Icon className="h-4 w-4 shrink-0" />
       <p className="flex-1 text-sm">{toast.message}</p>
@@ -51,7 +58,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={addToast}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2">
+      <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 sm:bottom-6 sm:right-6">
         {toasts.map((toast) => (
           <ToastItem key={toast.id} toast={toast} onRemove={removeToast} />
         ))}

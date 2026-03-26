@@ -53,3 +53,18 @@ export function useDeleteCourse() {
     },
   });
 }
+
+export function useUpdateCourse() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, title, description }) => {
+      const { data } = await api.put(`/api/courses/${id}`, { title, description });
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['course', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+    },
+  });
+}

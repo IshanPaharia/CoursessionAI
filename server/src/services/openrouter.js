@@ -61,14 +61,21 @@ Example format: [{"title": "Introduction", "videoIndices": [1, 2, 3]}, {"title":
 }
 
 export async function generateQuizQuestions(videoTitle, videoDescription) {
-  const prompt = `You are an educational quiz generator. Given this video's title and description, generate 5 multiple-choice quiz questions to test understanding.
+  const prompt = `You are an educational quiz generator specialized in creating questions that are HIGHLY SPECIFIC to the exact content of a particular video lesson. Do NOT ask generic or surface-level questions.
 
 Video Title: "${videoTitle}"
 Description: "${videoDescription || 'No description available'}"
 
+Generate 5 multiple-choice quiz questions that:
+1. Test SPECIFIC concepts, techniques, or facts that would be covered in THIS particular video
+2. Include concrete details (specific terms, methods, code patterns, formulas, etc.) relevant to the video topic
+3. Have plausible wrong answers that test real understanding, not just recall
+4. Cover different aspects/subtopics within the video
+5. Are challenging enough to verify the student actually watched and understood the content
+
 Return ONLY a valid JSON array of 5 questions. Each question must have:
-- "question": the question text
-- "options": array of exactly 4 answer choices
+- "question": the question text (specific and detailed)
+- "options": array of exactly 4 answer choices (all plausible)
 - "correctAnswer": index (0-3) of the correct option
 
 Example: [{"question": "What is...", "options": ["A", "B", "C", "D"], "correctAnswer": 0}]`;
@@ -76,6 +83,30 @@ Example: [{"question": "What is...", "options": ["A", "B", "C", "D"], "correctAn
   const response = await callOpenRouter(prompt, { maxTokens: 2048 });
   const jsonMatch = response.match(/\[[\s\S]*\]/);
   if (!jsonMatch) throw new Error('AI did not return valid quiz JSON');
+
+  return JSON.parse(jsonMatch[0]);
+}
+
+export async function generateVideoOrder(videoTitles) {
+  const prompt = `You are an educational content organizer. Given these video titles from a YouTube playlist, determine the correct logical/sequential order they should be watched in.
+
+YouTube playlists are sometimes scrambled or sorted backwards. Analyze the titles to determine the proper learning sequence based on:
+- Numbered episodes/parts (Part 1 before Part 2, etc.)
+- Topic progression (basics/intro before advanced)
+- Prerequisites (foundational concepts before dependent ones)
+- Any sequential indicators in titles
+
+Videos (current order):
+${videoTitles.map((t, i) => `${i}: ${t}`).join('\n')}
+
+Return ONLY a valid JSON array of the original indices in the correct order.
+Example: if videos are in reverse order, return [4, 3, 2, 1, 0].
+If already correct, return [0, 1, 2, 3, 4].
+Return ONLY the JSON array, nothing else.`;
+
+  const response = await callOpenRouter(prompt, { maxTokens: 512 });
+  const jsonMatch = response.match(/\[[\s\S]*?\]/);
+  if (!jsonMatch) throw new Error('AI did not return valid order JSON');
 
   return JSON.parse(jsonMatch[0]);
 }

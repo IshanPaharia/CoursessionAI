@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Save, Loader2 } from 'lucide-react';
+import { Save, Loader2, StickyNote } from 'lucide-react';
 import { useNote, useSaveNote } from '../hooks/useNotes';
 
 export default function VideoNotes({ videoId }) {
@@ -17,15 +17,12 @@ export default function VideoNotes({ videoId }) {
   }, [savedNotes]);
 
   useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, []);
 
   const handleChange = (val) => {
     setNotes(val);
     setDirty(true);
-
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       saveNote.mutate(val);
@@ -42,16 +39,19 @@ export default function VideoNotes({ videoId }) {
   if (isLoading) return null;
 
   return (
-    <div className="rounded-xl border border-white/5 bg-[#111118] p-4">
-      <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-300">Notes</h3>
+    <div className="card-warm p-4 sm:p-5">
+      <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {dirty && <span className="text-xs text-yellow-500">Unsaved</span>}
-          {saveNote.isPending && <Loader2 className="h-3 w-3 animate-spin text-purple-400" />}
+          <StickyNote className="h-4 w-4 text-amber-400" />
+          <h3 className="text-sm font-bold text-white">Notes</h3>
+        </div>
+        <div className="flex items-center gap-2">
+          {dirty && <span className="text-[11px] font-medium text-amber-500">Unsaved</span>}
+          {saveNote.isPending && <Loader2 className="h-3 w-3 animate-spin text-amber-400" />}
           <button
             onClick={handleSave}
             disabled={!dirty || saveNote.isPending}
-            className="flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 text-xs text-gray-400 transition-colors hover:text-white disabled:opacity-30"
+            className="btn-ghost px-2 py-1 text-xs disabled:opacity-30"
           >
             <Save className="h-3 w-3" />
             Save
@@ -63,7 +63,8 @@ export default function VideoNotes({ videoId }) {
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Add your notes for this video..."
         rows={4}
-        className="w-full resize-none rounded-lg border border-white/5 bg-[#0d0d14] px-3 py-2 text-sm text-gray-300 placeholder-gray-600 outline-none focus:border-purple-500/30"
+        className="w-full resize-none rounded-xl border border-white/[0.06] px-3 py-2.5 text-sm text-gray-300 placeholder-gray-600 outline-none transition-all focus:border-amber-500/30"
+        style={{ backgroundColor: 'rgba(13, 13, 20, 0.5)' }}
       />
     </div>
   );
