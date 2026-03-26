@@ -52,28 +52,28 @@ export default function VideoQuiz({ videoId }) {
 
   if (!quiz) {
     return (
-      <div className="card-warm">
+      <div className="brutal-card bg-[#ff99e6] p-0 overflow-hidden text-black transition-all">
         <div 
-          className="p-4 sm:p-5 flex items-center justify-between cursor-pointer group"
+          className="p-4 sm:p-5 flex items-center justify-between cursor-pointer group bg-white border-b-[3px] border-black"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-amber-400" />
-            <h3 className="text-sm font-bold text-white">Video Quiz</h3>
+            <Sparkles className="h-5 w-5 stroke-[2.5px]" />
+            <h3 className="text-base font-black uppercase tracking-widest text-black">Video Quiz</h3>
           </div>
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 group-hover:text-white transition-colors">
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            <div className="text-black bg-[#ff99e6] border-[2px] border-black p-1 brutal-shadow-sm group-hover:-translate-y-0.5 transition-transform">
+              {isExpanded ? <ChevronUp className="h-5 w-5 stroke-[3px]" /> : <ChevronDown className="h-5 w-5 stroke-[3px]" />}
             </div>
           </div>
         </div>
         
         {isExpanded && (
-          <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0 border-t border-white/[0.04]">
+          <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0">
             {(isLoading || generateQuiz.isPending) ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
-                <Loader2 className="h-6 w-6 animate-spin text-amber-500/50 mb-3" />
-                <p className="text-xs text-gray-500">Generating quiz questions focused on this video...</p>
+                <Loader2 className="h-8 w-8 animate-spin text-black stroke-[3px] mb-3" />
+                <p className="text-sm font-bold uppercase text-black">Generating quiz questions focused on this video...</p>
               </div>
             ) : null}
           </div>
@@ -83,18 +83,18 @@ export default function VideoQuiz({ videoId }) {
   }
 
   return (
-    <div className="card-warm">
+    <div className="brutal-card bg-[#ff99e6] p-0 overflow-hidden text-black transition-all">
       <div 
-        className="p-4 sm:p-5 flex items-center justify-between cursor-pointer group"
+        className="p-4 sm:p-5 flex items-center justify-between cursor-pointer group bg-white border-b-[3px] border-black"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-amber-400" />
-          <h3 className="text-sm font-bold text-white">
+          <Sparkles className="h-5 w-5 stroke-[2.5px]" />
+          <h3 className="text-base font-black uppercase tracking-widest text-black flex items-center gap-3">
             Video Quiz
             {submitted && result && (
-              <span className="ml-2 text-amber-400">
-                Score: {result.score}/{result.totalQuestions}
+              <span className="bg-[#facc15] px-2 py-0.5 border-[2px] border-black brutal-shadow-sm text-sm">
+                SCORE: {result.score}/{result.totalQuestions}
               </span>
             )}
           </h3>
@@ -103,44 +103,44 @@ export default function VideoQuiz({ videoId }) {
           <button
             onClick={handleGenerate}
             disabled={generateQuiz.isPending}
-            className="flex items-center gap-1.5 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-400 transition-colors hover:bg-amber-500/20 disabled:opacity-50"
+            className="hidden sm:flex items-center gap-1.5 border-[2px] border-black bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-black transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 brutal-shadow-sm disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0"
           >
             {generateQuiz.isPending ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <Loader2 className="h-4 w-4 stroke-[3px] animate-spin" />
             ) : (
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RotateCcw className="h-4 w-4 stroke-[3px]" />
             )}
             {generateQuiz.isPending ? 'Generating...' : 'New Quiz'}
           </button>
-          <div className="text-gray-400 group-hover:text-white transition-colors">
-            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          <div className="text-black bg-[#ff99e6] border-[2px] border-black p-1 brutal-shadow-sm group-hover:-translate-y-0.5 transition-transform">
+            {isExpanded ? <ChevronUp className="h-5 w-5 stroke-[3px]" /> : <ChevronDown className="h-5 w-5 stroke-[3px]" />}
           </div>
         </div>
       </div>
 
       {isExpanded && (
-        <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0 border-t border-white/[0.04]">
-          <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4">
+        <div className="px-4 sm:px-5 pb-5 pt-0">
+          <div className="space-y-4 sm:space-y-5 pt-4 sm:pt-5">
             {questions.map((q, qIndex) => (
-              <div key={qIndex} className="rounded-xl border border-white/[0.06] p-3 sm:p-4" style={{ backgroundColor: 'rgba(13, 13, 20, 0.5)' }}>
-                <p className="mb-2.5 text-sm font-medium text-white">
+              <div key={qIndex} className="bg-white border-[3px] border-black p-4 sm:p-5 brutal-shadow-sm">
+                <p className="mb-4 text-base font-black uppercase tracking-wide text-black leading-snug">
                   {qIndex + 1}. {q.question}
                 </p>
-                <div className="space-y-1.5 sm:space-y-2">
+                <div className="space-y-2 sm:space-y-3">
                   {q.options.map((option, oIndex) => {
                     const isSelected = selectedAnswers[qIndex] === oIndex;
                     const isCorrect = submitted && oIndex === q.correctAnswer;
                     const isWrong = submitted && isSelected && oIndex !== q.correctAnswer;
 
-                    let classes = 'flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all cursor-pointer ';
+                    let classes = 'flex items-center gap-3 border-[2px] border-black px-4 py-3 text-sm font-bold transition-transform cursor-pointer ';
                     if (isCorrect) {
-                      classes += 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400';
+                      classes += 'bg-emerald-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
                     } else if (isWrong) {
-                      classes += 'bg-red-500/10 border border-red-500/30 text-red-400';
+                      classes += 'bg-red-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
                     } else if (isSelected) {
-                      classes += 'bg-amber-500/10 border border-amber-500/30 text-amber-400';
+                      classes += 'bg-[#ff8c00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
                     } else {
-                      classes += 'border border-white/[0.06] text-gray-300 hover:border-white/10 hover:bg-white/[0.03]';
+                      classes += 'bg-gray-50 text-black hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]';
                     }
 
                     return (
@@ -148,14 +148,15 @@ export default function VideoQuiz({ videoId }) {
                         key={oIndex}
                         onClick={() => handleSelect(qIndex, oIndex)}
                         className={classes}
+                        disabled={submitted}
                       >
                         {isCorrect ? (
-                          <CheckCircle2 className="h-4 w-4 shrink-0" />
+                          <CheckCircle2 className="h-5 w-5 shrink-0 stroke-[3px]" />
                         ) : isWrong ? (
-                          <XCircle className="h-4 w-4 shrink-0" />
+                          <XCircle className="h-5 w-5 shrink-0 stroke-[3px]" />
                         ) : (
-                          <div className={`h-4 w-4 shrink-0 rounded-full border-2 transition-colors ${
-                            isSelected ? 'border-amber-400 bg-amber-400' : 'border-gray-600'
+                          <div className={`h-5 w-5 shrink-0 rounded-none border-[2px] border-black transition-colors ${
+                            isSelected ? 'bg-black' : 'bg-white'
                           }`} />
                         )}
                         <span className="text-left">{option}</span>
@@ -171,11 +172,25 @@ export default function VideoQuiz({ videoId }) {
             <button
               onClick={handleSubmit}
               disabled={Object.keys(selectedAnswers).length < questions.length || submitQuiz.isPending}
-              className="mt-4 btn-primary w-full py-2.5 justify-center disabled:opacity-50"
+              className="mt-6 btn-primary w-full py-3.5 justify-center bg-white text-black text-lg disabled:opacity-50"
             >
-              {submitQuiz.isPending ? 'Submitting...' : 'Submit Answers'}
+              {submitQuiz.isPending ? 'SUBMITTING...' : 'SUBMIT ANSWERS'}
             </button>
           )}
+
+          {/* Mobile generated button */}
+          <button
+            onClick={handleGenerate}
+            disabled={generateQuiz.isPending}
+            className="mt-4 sm:hidden flex w-full items-center justify-center gap-2 border-[2px] border-black bg-white px-4 py-3 text-sm font-bold uppercase tracking-widest text-black transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 brutal-shadow-sm disabled:opacity-50"
+          >
+            {generateQuiz.isPending ? (
+              <Loader2 className="h-5 w-5 stroke-[3px] animate-spin" />
+            ) : (
+              <RotateCcw className="h-5 w-5 stroke-[3px]" />
+            )}
+            {generateQuiz.isPending ? 'Generating...' : 'New Quiz'}
+          </button>
         </div>
       )}
     </div>

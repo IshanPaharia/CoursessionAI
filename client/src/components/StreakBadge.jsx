@@ -9,11 +9,9 @@ export default function StreakBadge() {
   const streak = data.currentStreak;
 
   return (
-    <div className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-sm" style={{ background: streak > 0 ? 'rgba(251, 146, 60, 0.12)' : 'rgba(255,255,255,0.05)' }}>
-      <Flame className={`h-4 w-4 ${streak > 0 ? 'text-orange-400' : 'text-gray-500'}`} />
-      <span className={`font-bold ${streak > 0 ? 'text-orange-400' : 'text-gray-500'}`}>
-        {streak}
-      </span>
+    <div className={`flex items-center gap-1.5 border-[2px] border-black px-2.5 py-1 text-sm brutal-shadow-sm font-bold uppercase tracking-wider ${streak > 0 ? 'bg-white text-black' : 'bg-gray-200 text-gray-500'}`}>
+      <Flame className={`h-4 w-4 stroke-[3px] ${streak > 0 ? 'text-[#ff8c00] fill-[#ff8c00]' : 'text-gray-500'}`} />
+      <span>{streak}</span>
     </div>
   );
 }

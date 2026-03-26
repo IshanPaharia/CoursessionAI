@@ -46,43 +46,40 @@ export default function VideoBookmarks({ videoId, youtubeId }) {
   };
 
   return (
-    <div className="card-warm p-4 sm:p-5">
-      <div className="mb-3 flex items-center justify-between">
+    <div className="brutal-card bg-white p-4 sm:p-5 text-black">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Bookmark className="h-4 w-4 text-amber-400" />
-          <h3 className="text-sm font-bold text-white">Bookmarks</h3>
+          <Bookmark className="h-5 w-5 stroke-[2.5px] fill-black" />
+          <h3 className="text-base font-black uppercase tracking-widest text-black">Bookmarks</h3>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-1 rounded-xl border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-400 transition-colors hover:bg-amber-500/20"
+          className="flex items-center gap-1 bg-white border-[2px] border-black px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-black hover:-translate-y-0.5 hover:-translate-x-0.5 brutal-shadow-sm transition-transform"
         >
-          <Plus className="h-3 w-3" />
-          Add
+          <Plus className="h-4 w-4 stroke-[3px]" />
+          ADD
         </button>
       </div>
 
       {showForm && (
-        <div className="mb-3 flex flex-col sm:flex-row gap-2">
+        <div className="mb-4 flex flex-col sm:flex-row gap-3 bg-[#facc15] border-[3px] border-black p-3 brutal-shadow-sm">
           <input
             value={timestamp}
             onChange={(e) => setTimestamp(e.target.value)}
             placeholder="0:00"
-            className="w-full sm:w-20 rounded-xl border border-white/[0.08] px-2.5 py-1.5 text-xs text-white outline-none focus:border-amber-500/40"
-            style={{ backgroundColor: 'rgba(13, 13, 20, 0.5)' }}
+            className="w-full sm:w-24 rounded-none border-[3px] border-black px-3 py-2 text-sm font-bold text-black outline-none placeholder-gray-600 focus:translate-x-1 focus:translate-y-1 focus:shadow-none brutal-shadow-sm transition-all bg-white"
           />
           <input
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Bookmark note..."
-            className="flex-1 rounded-xl border border-white/[0.08] px-2.5 py-1.5 text-xs text-white outline-none focus:border-amber-500/40"
-            style={{ backgroundColor: 'rgba(13, 13, 20, 0.5)' }}
+            className="flex-1 rounded-none border-[3px] border-black px-3 py-2 text-sm font-bold text-black outline-none placeholder-gray-600 focus:translate-x-1 focus:translate-y-1 focus:shadow-none brutal-shadow-sm transition-all bg-white"
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           />
           <button
             onClick={handleAdd}
             disabled={!timestamp}
-            className="rounded-xl px-3 py-1.5 text-xs font-semibold text-amber-400 disabled:opacity-30"
-            style={{ background: 'rgba(251, 146, 60, 0.15)' }}
+            className="rounded-none border-[3px] border-black bg-black px-4 py-2 text-sm font-bold uppercase tracking-widest text-white hover:bg-gray-800 disabled:opacity-50 transition-colors"
           >
             Save
           </button>
@@ -90,24 +87,26 @@ export default function VideoBookmarks({ videoId, youtubeId }) {
       )}
 
       {bookmarks.length === 0 ? (
-        <p className="text-xs text-gray-600">No bookmarks yet.</p>
+        <div className="border-[2px] border-dashed border-black p-4 text-center">
+          <p className="text-xs font-bold uppercase text-gray-500">No bookmarks yet.</p>
+        </div>
       ) : (
-        <div className="space-y-1.5">
+        <div className="border-[3px] border-black bg-white brutal-shadow-sm">
           {bookmarks.map((bm) => (
-            <div key={bm.id} className="group flex items-center gap-2 rounded-xl px-2.5 py-2 transition-colors hover:bg-white/[0.03]">
+            <div key={bm.id} className="group flex items-center gap-3 border-b-[2px] border-black px-3 py-3 transition-colors hover:bg-[#ff99e6] last:border-b-0">
               <button
                 onClick={() => handleTimestampClick(bm.timestamp)}
-                className="flex shrink-0 items-center gap-1 text-xs font-mono text-amber-400 hover:underline"
+                className="flex shrink-0 items-center gap-1 bg-white border-[2px] border-black px-2 py-1 text-xs font-bold text-black brutal-shadow-sm hover:-translate-y-0.5 transition-transform"
               >
-                <Clock className="h-3 w-3" />
+                <Clock className="h-3 w-3 stroke-[3px]" />
                 {formatTimestamp(bm.timestamp)}
               </button>
-              <span className="min-w-0 flex-1 truncate text-xs text-gray-400">{bm.note}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-black">{bm.note}</span>
               <button
                 onClick={() => deleteBookmark.mutate(bm.id)}
-                className="shrink-0 text-gray-600 opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
+                className="shrink-0 text-black border-[2px] border-black bg-white p-1 hover:bg-red-400 brutal-shadow-sm group-hover:opacity-100 sm:opacity-0 transition-opacity"
               >
-                <Trash2 className="h-3 w-3" />
+                <Trash2 className="h-4 w-4 stroke-[2.5px]" />
               </button>
             </div>
           ))}

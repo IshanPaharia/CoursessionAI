@@ -37,40 +37,33 @@ export default function ProfilePage() {
       label: 'Courses',
       value: totalCourses,
       icon: BookOpen,
-      gradient: 'from-amber-500/20 to-orange-500/20',
-      color: 'text-amber-400',
+      bg: 'bg-[#facc15]',
     },
     {
       label: 'Completed',
       value: completedCourses,
       icon: CheckCircle2,
-      gradient: 'from-emerald-500/20 to-teal-500/20',
-      color: 'text-emerald-400',
+      bg: 'bg-[#ff99e6]',
     },
     {
       label: 'Videos Watched',
       value: `${watchedVideos}/${totalVideos}`,
       icon: TrendingUp,
-      gradient: 'from-blue-500/20 to-cyan-500/20',
-      color: 'text-blue-400',
+      bg: 'bg-[#00e6e6]',
     },
     {
       label: 'Time Spent',
       value: formatHours(watchedDuration),
       icon: Clock,
-      gradient: 'from-violet-500/20 to-purple-500/20',
-      color: 'text-violet-400',
+      bg: 'bg-[#c399ff]',
     },
   ];
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:py-8 sm:px-6 pb-20 sm:pb-8 relative">
-      {/* Background blobs */}
-      <div className="pointer-events-none absolute -top-40 right-0 h-[400px] w-[400px] rounded-full bg-amber-500/5 blur-[120px] animate-blob" />
-
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12 sm:px-6 pb-20 sm:pb-12 bg-white min-h-screen font-sans text-black">
       {/* Profile header */}
-      <div className="text-center mb-8 sm:mb-10 animate-slide-up">
-        <div className="inline-flex items-center justify-center h-20 w-20 sm:h-24 sm:w-24 rounded-3xl border-2 border-amber-500/20 mb-4 mx-auto overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(244, 63, 94, 0.1))' }}>
+      <div className="text-center mb-10 sm:mb-14 animate-slide-up">
+        <div className="inline-flex items-center justify-center h-24 w-24 sm:h-32 sm:w-32 rounded-none border-[4px] border-black bg-[#ff8c00] brutal-shadow mb-6 mx-auto overflow-hidden">
           {user?.imageUrl ? (
             <img
               src={user.imageUrl}
@@ -78,78 +71,88 @@ export default function ProfilePage() {
               className="h-full w-full object-cover"
             />
           ) : (
-            <User className="h-10 w-10 text-amber-400" />
+            <User className="h-12 w-12 text-black stroke-[2.5px]" />
           )}
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-display font-extrabold text-black uppercase tracking-tight leading-none">
           {user?.fullName || 'Student'}
         </h1>
-        <p className="mt-1 text-sm text-gray-400 font-light">
+        <p className="mt-3 text-base font-bold text-gray-800 tracking-wide uppercase">
           {user?.primaryEmailAddress?.emailAddress || ''}
         </p>
         {user?.createdAt && (
-          <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-gray-500">
-            <Calendar className="h-3.5 w-3.5" />
-            Joined {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          <p className="mt-4 flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-widest text-black bg-gray-100 border-[2px] border-black px-4 py-1.5 brutal-shadow-sm inline-flex mx-auto">
+            <Calendar className="h-4 w-4 stroke-[3px]" />
+            JOINED {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </p>
         )}
       </div>
 
       {/* Streak card */}
       {streakData && (
-        <div className="mb-6 sm:mb-8 card-warm p-5 sm:p-6 text-center animate-slide-up" style={{ animationDelay: '100ms' }}>
-          <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl mb-3" style={{ background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(249, 115, 22, 0.15))' }}>
-            <Flame className={`h-8 w-8 ${streakData.currentStreak > 0 ? 'text-orange-400' : 'text-gray-500'}`} />
+        <div className="mb-8 sm:mb-10 brutal-card bg-[#ff8c00] p-6 sm:p-8 text-center animate-slide-up" style={{ animationDelay: '100ms' }}>
+          <div className="inline-flex items-center justify-center h-16 w-16 mb-4 bg-white border-[3px] border-black brutal-shadow-sm">
+            <Flame className={`h-10 w-10 stroke-[2.5px] ${streakData.currentStreak > 0 ? 'text-[#ff4500]' : 'text-gray-400'}`} />
           </div>
-          <div className="text-3xl sm:text-4xl font-extrabold text-gradient mb-1">
+          <div className="text-5xl sm:text-6xl font-display font-black text-black mb-2 uppercase">
             {streakData.currentStreak}
           </div>
-          <p className="text-sm font-medium text-gray-400">
+          <p className="text-lg font-bold text-black uppercase tracking-widest">
             day learning streak
           </p>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-2 text-sm font-bold uppercase tracking-tight text-gray-900 bg-white inline-block px-3 py-1 border-[2px] border-black">
             Longest: {streakData.longestStreak || 0} days
           </p>
         </div>
       )}
 
       {/* Stats grid */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
+      <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-8 sm:mb-10">
         {stats.map((stat, i) => (
           <div
             key={stat.label}
-            className="card-warm p-4 sm:p-5 text-center animate-slide-up"
+            className="brutal-card bg-white p-5 sm:p-6 text-center animate-slide-up hover:-translate-y-1 transition-transform"
             style={{ animationDelay: `${(i + 2) * 100}ms` }}
           >
-            <div className={`inline-flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-br ${stat.gradient} mb-3`}>
-              <stat.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${stat.color}`} />
+            <div className={`inline-flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-none border-[3px] border-black ${stat.bg} brutal-shadow-sm mb-4`}>
+              <stat.icon className="h-6 w-6 sm:h-7 sm:w-7 text-black stroke-[2.5px]" />
             </div>
-            <div className="text-xl sm:text-2xl font-extrabold text-white">{stat.value}</div>
-            <p className="text-xs font-medium text-gray-400 mt-1">{stat.label}</p>
+            <div className="text-3xl sm:text-4xl font-display font-black text-black uppercase">{stat.value}</div>
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-800 mt-2">{stat.label}</p>
           </div>
         ))}
       </div>
 
       {/* Progress overview */}
-      <div className="card-warm p-5 sm:p-6 animate-slide-up" style={{ animationDelay: '600ms' }}>
-        <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider text-gray-300">Overall Progress</h3>
-        <div className="space-y-4">
+      <div className="brutal-card bg-[#facc15] p-6 sm:p-8 animate-slide-up" style={{ animationDelay: '600ms' }}>
+        <h3 className="text-xl font-display font-black text-black mb-6 uppercase tracking-widest">Overall Progress</h3>
+        <div className="space-y-6">
           <div>
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-gray-400">Videos</span>
-              <span className="font-semibold text-amber-400">{totalVideos > 0 ? Math.round((watchedVideos / totalVideos) * 100) : 0}%</span>
+            <div className="flex items-center justify-between text-sm sm:text-base font-bold uppercase tracking-wider text-black mb-3">
+              <span>Videos</span>
+              <span className="bg-white border-[2px] border-black px-2 py-0.5 brutal-shadow-sm">
+                {totalVideos > 0 ? Math.round((watchedVideos / totalVideos) * 100) : 0}%
+              </span>
             </div>
-            <div className="progress-bar">
-              <div className="progress-bar-fill" style={{ width: `${totalVideos > 0 ? (watchedVideos / totalVideos) * 100 : 0}%` }} />
+            <div className="h-4 w-full bg-white border-[3px] border-black overflow-hidden relative brutal-shadow-sm">
+              <div 
+                className="h-full bg-black border-r-[3px] border-black absolute left-0 top-0 bottom-0" 
+                style={{ width: `${totalVideos > 0 ? (watchedVideos / totalVideos) * 100 : 0}%` }} 
+              />
             </div>
           </div>
           <div>
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-gray-400">Time</span>
-              <span className="font-semibold text-amber-400">{totalDuration > 0 ? Math.round((watchedDuration / totalDuration) * 100) : 0}%</span>
+            <div className="flex items-center justify-between text-sm sm:text-base font-bold uppercase tracking-wider text-black mb-3">
+              <span>Time</span>
+              <span className="bg-white border-[2px] border-black px-2 py-0.5 brutal-shadow-sm">
+                {totalDuration > 0 ? Math.round((watchedDuration / totalDuration) * 100) : 0}%
+              </span>
             </div>
-            <div className="progress-bar">
-              <div className="progress-bar-fill" style={{ width: `${totalDuration > 0 ? (watchedDuration / totalDuration) * 100 : 0}%` }} />
+            <div className="h-4 w-full bg-white border-[3px] border-black overflow-hidden relative brutal-shadow-sm">
+              <div 
+                className="h-full bg-[#ff99e6] border-r-[3px] border-black absolute left-0 top-0 bottom-0" 
+                style={{ width: `${totalDuration > 0 ? (watchedDuration / totalDuration) * 100 : 0}%` }} 
+              />
             </div>
           </div>
         </div>

@@ -1,221 +1,170 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@clerk/react';
-import { ArrowRight, Play, BookOpen, BarChart3, Sparkles, Layers, Bookmark, Zap, ChevronRight } from 'lucide-react';
+import { ArrowRight, Play, BookOpen, BarChart3, Sparkles, Layers, Bookmark, Zap } from 'lucide-react';
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
 
   return (
-    <div className="relative overflow-hidden selection:bg-amber-500/30 pb-16 sm:pb-0">
-      {/* Decorative gradient blobs */}
-      <div className="pointer-events-none absolute -top-20 left-1/4 h-[500px] w-[500px] rounded-full bg-amber-500/10 blur-[120px] animate-blob" />
-      <div className="pointer-events-none absolute -right-20 top-40 h-[400px] w-[400px] rounded-full bg-rose-500/8 blur-[100px] animate-blob animation-delay-2000" />
-      <div className="pointer-events-none absolute -bottom-40 left-10 h-[400px] w-[400px] rounded-full bg-orange-500/8 blur-[100px] animate-blob animation-delay-4000" />
+    <div className="w-full bg-[#facc15] min-h-screen text-black font-sans pb-16 sm:pb-0">
+      
+      {/* Hero Section (Pink Background) */}
+      <section className="w-full bg-[#ff99e6] border-b-[3px] border-black pb-20 pt-24 sm:pt-32 px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-4xl">
+            <h1 className="font-display font-extrabold text-[clamp(4rem,10vw,8rem)] leading-[0.9] tracking-tighter uppercase mb-6 drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+              <span className="block">Coursession</span>
+              <span className="block">AI</span>
+            </h1>
+            
+            <p className="mt-8 max-w-2xl text-xl sm:text-2xl font-medium leading-relaxed border-l-[4px] border-black pl-6">
+              Transform any YouTube playlist into a structured, interactive learning experience.
+              Track progress, take notes, and let AI organize your curriculum.
+            </p>
 
-      {/* Hero */}
-      <section className="relative mx-auto max-w-7xl px-4 pb-16 pt-16 sm:px-6 sm:pt-28 lg:pt-32 animate-fade-in">
-        <div className="text-center animate-slide-up">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-4 py-1.5 text-sm text-amber-300 backdrop-blur-md">
-            <Sparkles className="h-4 w-4" />
-            AI-Powered Learning Platform
-          </div>
-
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
-            <span className="block text-white mb-1">We Are</span>
-            <span className="block text-gradient pb-2">
-              Coursession
-            </span>
-          </h1>
-
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-gray-400 sm:text-lg lg:text-xl font-light px-4">
-            Transform any YouTube playlist into a structured, interactive learning experience.
-            Track progress, take notes, and let AI organize your curriculum.
-          </p>
-
-          <div className="mt-8 sm:mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row px-4">
-            <Link
-              to={isSignedIn ? '/dashboard' : '/sign-up'}
-              className="group w-full sm:w-auto relative flex items-center justify-center gap-2 btn-primary px-7 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base animate-shimmer"
-            >
-              Get Started
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-            <a
-              href="#features"
-              className="group w-full sm:w-auto flex items-center justify-center gap-2 btn-secondary px-7 py-3.5 sm:px-8 sm:py-4"
-            >
-              <Play className="h-4 w-4 text-amber-400 group-hover:text-orange-400 transition-colors" />
-              See How It Works
-            </a>
-          </div>
-        </div>
-
-        {/* Mock UI preview */}
-        <div className="relative mx-auto mt-14 sm:mt-20 max-w-4xl animate-slide-up animation-delay-2000 px-2">
-          <div className="glass-card p-1.5 sm:p-2">
-            <div className="flex items-center gap-1.5 sm:gap-2 border-b border-white/5 px-3 sm:px-4 py-2.5 sm:py-3 bg-black/20 rounded-t-xl">
-              <div className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-red-500/80" />
-              <div className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-yellow-500/80" />
-              <div className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-green-500/80" />
-              <div className="ml-3 sm:ml-4 flex-1">
-                <div className="mx-auto max-w-sm rounded-md bg-white/5 px-3 py-1 text-center text-[10px] sm:text-xs text-gray-400 font-mono">
-                  coursession.ai/dashboard
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 p-3 sm:p-5 bg-black/10 rounded-b-xl">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className={`overflow-hidden rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur transition-all duration-300 hover:border-amber-500/30 ${i === 3 ? 'hidden sm:block' : ''}`}>
-                  <div className="aspect-video bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-rose-500/15 relative">
-                    <div className="absolute inset-0 bg-black/20" />
-                  </div>
-                  <div className="p-3 sm:p-4">
-                    <div className="mb-2 sm:mb-3 h-3 w-3/4 rounded bg-white/10" />
-                    <div className="h-2 w-1/2 rounded bg-white/5" />
-                    <div className="mt-3 sm:mt-4 h-1.5 overflow-hidden rounded-full bg-white/5">
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${[65, 30, 90][i - 1]}%`,
-                          background: 'linear-gradient(90deg, #f59e0b, #f97316, #f43f5e)',
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="mt-12 flex flex-col sm:flex-row gap-6">
+              <Link
+                to={isSignedIn ? '/dashboard' : '/sign-up'}
+                className="btn-primary"
+              >
+                START LEARNING FREE
+                <ArrowRight className="h-6 w-6 ml-2" />
+              </Link>
+              <a
+                href="#features"
+                className="btn-secondary"
+              >
+                <Play className="h-6 w-6 mr-2 text-[#ff8c00] fill-[#ff8c00]" />
+                SEE HOW IT WORKS
+              </a>
             </div>
           </div>
-          <div className="pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-b from-amber-500/8 to-transparent blur-xl -z-10" />
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="relative mx-auto max-w-7xl px-4 py-16 sm:py-24 sm:px-6">
-        <div className="mb-12 sm:mb-16 text-center">
-          <h2 className="text-2xl font-bold text-white sm:text-4xl lg:text-5xl tracking-tight">
-            Everything You Need to <span className="text-gradient">Learn</span>
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-gray-400 font-light text-base sm:text-lg px-4">
-            A complete learning management system built around YouTube content.
-          </p>
-        </div>
+      {/* Features Section (Yellow Background) */}
+      <section id="features" className="w-full bg-[#facc15] py-20 px-4 sm:px-6 border-b-[3px] border-black">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16">
+            <h2 className="font-display text-4xl sm:text-6xl font-extrabold uppercase tracking-tight">
+              Everything You Need to
+              <br />
+              <span className="bg-black text-[#facc15] px-4 py-2 inline-block mt-2 brutal-shadow-sm rotate-1">LEARN</span>
+            </h2>
+          </div>
 
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-2 sm:px-0">
-          {[
-            {
-              icon: Play,
-              title: 'One-Click Import',
-              desc: 'Paste any YouTube playlist URL. We extract all video metadata, thumbnails, and durations automatically.',
-              gradient: 'from-amber-500/20 to-orange-500/20',
-              iconColor: 'text-amber-400',
-            },
-            {
-              icon: Layers,
-              title: 'Smart Chapters',
-              desc: 'AI organizes your videos into logical chapters. Drag-and-drop to customize the structure.',
-              gradient: 'from-orange-500/20 to-rose-500/20',
-              iconColor: 'text-orange-400',
-            },
-            {
-              icon: BarChart3,
-              title: 'Progress Tracking',
-              desc: 'Mark videos complete, see progress bars, and pick up exactly where you left off.',
-              gradient: 'from-rose-500/20 to-pink-500/20',
-              iconColor: 'text-rose-400',
-            },
-            {
-              icon: BookOpen,
-              title: 'Personal Notes',
-              desc: 'Take notes on any video with auto-save. Your thoughts, always attached to the right lesson.',
-              gradient: 'from-emerald-500/20 to-teal-500/20',
-              iconColor: 'text-emerald-400',
-            },
-            {
-              icon: Bookmark,
-              title: 'Video Bookmarks',
-              desc: 'Bookmark key moments with timestamps. One click to jump back to the important parts.',
-              gradient: 'from-blue-500/20 to-cyan-500/20',
-              iconColor: 'text-blue-400',
-            },
-            {
-              icon: Sparkles,
-              title: 'AI-Powered',
-              desc: 'Generate quizzes, summaries, and chat with AI about your videos. Smart learning, less effort.',
-              gradient: 'from-violet-500/20 to-purple-500/20',
-              iconColor: 'text-violet-400',
-            },
-          ].map(({ icon: Icon, title, desc, gradient, iconColor }) => (
-            <div key={title} className="glass-card group p-5 sm:p-6">
-              <div className={`mb-4 sm:mb-5 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} border border-white/5 transition-all group-hover:scale-110 duration-300`}>
-                <Icon className={`h-6 w-6 sm:h-7 sm:w-7 ${iconColor} drop-shadow-md`} />
+          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                icon: Play,
+                title: 'ONE-CLICK IMPORT',
+                desc: 'Paste any YouTube playlist URL. We extract all video metadata, thumbnails, and durations automatically.',
+                bg: 'bg-white',
+              },
+              {
+                icon: Layers,
+                title: 'SMART CHAPTERS',
+                desc: 'AI organizes your videos into logical chapters. Drag-and-drop to customize the structure.',
+                bg: 'bg-[#ff99e6]',
+              },
+              {
+                icon: BarChart3,
+                title: 'PROGRESS TRACKING',
+                desc: 'Mark videos complete, see progress bars, and pick up exactly where you left off.',
+                bg: 'bg-white',
+              },
+              {
+                icon: BookOpen,
+                title: 'PERSONAL NOTES',
+                desc: 'Take notes on any video with auto-save. Your thoughts, always attached to the right lesson.',
+                bg: 'bg-[#ff8c00]',
+              },
+              {
+                icon: Bookmark,
+                title: 'VIDEO BOOKMARKS',
+                desc: 'Bookmark key moments with timestamps. One click to jump back to the important parts.',
+                bg: 'bg-white',
+              },
+              {
+                icon: Sparkles,
+                title: 'AI-POWERED',
+                desc: 'Generate quizzes, summaries, and chat with AI about your videos. Smart learning, less effort.',
+                bg: 'bg-[#ff99e6]',
+              },
+            ].map(({ icon: Icon, title, desc, bg }, index) => (
+              <div key={title} className={`brutal-card ${bg} p-8 flex flex-col items-start ${index % 2 === 0 ? '-rotate-1' : 'rotate-1'} hover:rotate-0 transition-transform duration-200`}>
+                <div className="h-14 w-14 border-[3px] border-black rounded-none flex items-center justify-center bg-white mb-6 brutal-shadow-sm">
+                  <Icon className="h-7 w-7 text-black stroke-[3px]" />
+                </div>
+                <h3 className="font-display text-xl sm:text-2xl font-bold uppercase tracking-wide mb-3">{title}</h3>
+                <p className="text-base font-medium leading-relaxed">{desc}</p>
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-white tracking-wide">{title}</h3>
-              <p className="mt-2 sm:mt-3 text-sm leading-relaxed text-gray-400 font-light">{desc}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* How it works */}
-      <section className="relative mx-auto max-w-7xl px-4 py-16 sm:py-24 sm:px-6">
-        <div className="mb-12 sm:mb-16 text-center">
-          <h2 className="text-2xl font-bold text-white sm:text-4xl lg:text-5xl tracking-tight">
-            How It <span className="text-gradient">Works</span>
-          </h2>
-        </div>
-        <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-3 max-w-4xl mx-auto px-2 sm:px-0">
-          {[
-            { step: '01', title: 'Paste', desc: 'Drop a YouTube playlist URL into Coursession.', icon: Zap },
-            { step: '02', title: 'Organize', desc: 'AI auto-groups your videos into smart chapters.', icon: Layers },
-            { step: '03', title: 'Learn', desc: 'Watch, take notes, quiz yourself, and track progress.', icon: BookOpen },
-          ].map(({ step, title, desc, icon: Icon }) => (
-            <div key={step} className="relative text-center p-6 sm:p-8 card-warm">
-              <div className="inline-flex items-center justify-center h-16 w-16 sm:h-20 sm:w-20 rounded-2xl mb-4 sm:mb-6" style={{ background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(244, 63, 94, 0.1))' }}>
-                <Icon className="h-8 w-8 sm:h-10 sm:w-10 text-amber-400" />
+      <section className="w-full bg-[#ff99e6] py-20 px-4 sm:px-6 border-b-[3px] border-black">
+        <div className="mx-auto max-w-7xl text-center">
+          <div className="mb-16">
+            <h2 className="font-display text-5xl sm:text-7xl font-extrabold uppercase tracking-tight">
+              HOW IT WORKS
+            </h2>
+          </div>
+          
+          <div className="grid gap-12 sm:gap-8 grid-cols-1 sm:grid-cols-3 max-w-5xl mx-auto">
+            {[
+              { step: '01', title: 'PASTE', desc: 'Drop a YouTube playlist URL into Coursession.', icon: Zap },
+              { step: '02', title: 'ORGANIZE', desc: 'AI auto-groups your videos into smart chapters.', icon: Layers },
+              { step: '03', title: 'LEARN', desc: 'Watch, take notes, quiz yourself, and track progress.', icon: BookOpen },
+            ].map(({ step, title, desc, icon: Icon }) => (
+              <div key={step} className="brutal-card bg-white p-8 relative mt-10 sm:mt-0">
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 h-20 w-20 border-[3px] border-black bg-[#ff8c00] flex items-center justify-center brutal-shadow-sm font-display text-3xl font-bold">
+                  {step}
+                </div>
+                <div className="mt-12">
+                  <h3 className="font-display text-2xl font-bold mb-4 uppercase">{title}</h3>
+                  <p className="font-medium">{desc}</p>
+                </div>
               </div>
-              <div className="text-[10px] sm:text-xs font-bold text-amber-500/60 tracking-widest mb-2 uppercase">Step {step}</div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{title}</h3>
-              <p className="text-sm text-gray-400 font-light">{desc}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="relative mx-auto max-w-7xl px-4 py-16 sm:py-24 sm:px-6">
-        <div className="relative overflow-hidden glass-card !rounded-2xl sm:!rounded-3xl p-8 sm:p-12 lg:p-20 text-center border-amber-500/10">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-rose-500/5 -z-10" />
-          <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 sm:h-60 sm:w-60 rounded-full bg-amber-500/15 blur-[80px] animate-blob" />
-          <div className="pointer-events-none absolute -bottom-20 -left-20 h-48 w-48 sm:h-60 sm:w-60 rounded-full bg-rose-500/10 blur-[80px] animate-blob animation-delay-2000" />
-
-          <h2 className="relative text-3xl font-bold text-white sm:text-4xl lg:text-5xl tracking-tight">
-            Start Learning <span className="text-gradient">Smarter</span>
-          </h2>
-          <p className="relative mx-auto mt-4 sm:mt-6 max-w-lg text-gray-300 font-light text-base sm:text-lg px-4">
-            Join learners who transform YouTube playlists into structured courses.
-            Free to get started.
-          </p>
-          <Link
-            to={isSignedIn ? '/dashboard' : '/sign-up'}
-            className="relative mt-8 sm:mt-10 inline-flex items-center gap-2 btn-primary px-7 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base"
-          >
-            Get Started Free
-            <ArrowRight className="h-5 w-5" />
-          </Link>
+      <section className="w-full bg-[#facc15] py-24 px-4 sm:px-6">
+        <div className="mx-auto max-w-4xl">
+          <div className="brutal-card bg-white p-12 text-center">
+            <h2 className="font-display text-4xl sm:text-6xl font-extrabold uppercase tracking-tight mb-6">
+              START LEARNING
+              <br/>
+              <span className="bg-[#ff8c00] px-4 font-black">SMARTER</span>
+            </h2>
+            <p className="text-xl font-medium mb-10 max-w-xl mx-auto">
+              Join learners who transform YouTube playlists into structured courses. Free to get started.
+            </p>
+            <Link
+              to={isSignedIn ? '/dashboard' : '/sign-up'}
+              className="btn-primary text-lg px-8 py-5 inline-flex"
+            >
+              CREATE YOUR FIRST COURSE
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 bg-black/20 py-8 sm:py-10 backdrop-blur-md mb-14 sm:mb-0">
-        <div className="mx-auto max-w-7xl px-4 text-center text-sm text-gray-500 sm:px-6">
-          <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-            <BookOpen className="h-5 w-5 text-amber-400" />
-            <span className="text-gradient font-bold text-lg">
+      <footer className="w-full bg-black py-10 text-white border-t-[3px] border-black pb-24 sm:pb-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col items-center justify-center text-center">
+          <div className="flex items-center gap-3 mb-4">
+            <BookOpen className="h-6 w-6 text-[#facc15]" />
+            <span className="font-display font-bold text-2xl uppercase tracking-widest text-[#facc15]">
               CoursessionAI
             </span>
           </div>
-          <p className="font-light">— Transform playlists into knowledge.</p>
+          <p className="font-medium text-gray-400 uppercase tracking-widest text-sm">— Transform playlists into knowledge —</p>
         </div>
       </footer>
     </div>

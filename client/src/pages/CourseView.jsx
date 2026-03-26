@@ -54,51 +54,51 @@ function VideoSidebar({ courseId, modules, videos, progress, currentVideoId, onS
   };
 
   return (
-    <div className="flex h-full flex-col border-l border-white/[0.06]" style={{ backgroundColor: 'rgba(10, 10, 15, 0.9)' }}>
+    <div className="flex h-full flex-col border-l-[3px] border-black bg-white">
       {/* Header */}
-      <div className="border-b border-white/[0.06] p-4 bg-white/[0.02]">
+      <div className="border-b-[3px] border-black bg-[#ff99e6] p-4 brutal-shadow-sm z-10">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-bold text-white">Course Content</h3>
+          <h3 className="text-sm font-bold text-black uppercase tracking-wider">Course Content</h3>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-amber-400 ml-1">{overallProgress}%</span>
+            <span className="text-xs font-black text-black ml-1 bg-white px-1.5 py-0.5 border-[2px] border-black">{overallProgress}%</span>
             {onClose && (
-              <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-                <X className="h-5 w-5" />
+              <button onClick={onClose} className="text-black hover:scale-110 transition-transform bg-white border-[2px] border-black brutal-shadow-sm p-0.5">
+                <X className="h-4 w-4 stroke-[3px]" />
               </button>
             )}
           </div>
         </div>
-        <div className="progress-bar">
-          <div className="progress-bar-fill" style={{ width: `${overallProgress}%` }} />
+        <div className="progress-bar border-[2px] border-black bg-white h-3">
+          <div className="h-full bg-black" style={{ width: `${overallProgress}%` }} />
         </div>
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-2 text-xs font-bold uppercase text-black">
           {watchedCount}/{videos.length} completed
         </p>
       </div>
 
       {/* Video list */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto custom-scrollbar bg-gray-50">
         {modules.map((mod) => {
           const moduleVideos = videos.filter(v => v.module_id === mod.id);
           const isCollapsed = collapsedModules[mod.id];
 
           return (
-            <div key={mod.id} className="border-b border-white/[0.04] last:border-0">
+            <div key={mod.id} className="border-b-[3px] border-black last:border-b-0 bg-[#facc15]">
               <button
                 onClick={() => toggleModule(mod.id)}
-                className="flex w-full items-center justify-between px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-400 transition-all hover:text-amber-300 hover:bg-white/[0.03]"
+                className="flex w-full items-center justify-between px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-black transition-all hover:bg-[#ff8c00]"
               >
                 <span className="truncate">{mod.title}</span>
-                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-white/5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-none border-[2px] border-black bg-white brutal-shadow-sm">
                   {isCollapsed
-                    ? <ChevronDown className="h-3 w-3 shrink-0" />
-                    : <ChevronUp className="h-3 w-3 shrink-0" />
+                    ? <ChevronDown className="h-4 w-4 shrink-0 stroke-[3px]" />
+                    : <ChevronUp className="h-4 w-4 shrink-0 stroke-[3px]" />
                   }
                 </span>
               </button>
 
               {!isCollapsed && (
-                <div className="pb-1">
+                <div className="bg-white border-t-[3px] border-black">
                   {moduleVideos.map((video) => {
                     const isActive = video.id === currentVideoId;
                     const isWatched = progressMap[video.id]?.is_watched;
@@ -107,26 +107,23 @@ function VideoSidebar({ courseId, modules, videos, progress, currentVideoId, onS
                       <button
                         key={video.id}
                         onClick={() => onSelectVideo(video.id)}
-                        className={`group flex w-full items-start gap-3 px-4 py-2.5 text-left transition-all duration-200 relative ${
-                          isActive ? 'bg-amber-500/8' : 'hover:bg-white/[0.03]'
+                        className={`group flex w-full items-start gap-3 px-4 py-3 text-left transition-all duration-200 border-b-[2px] border-black last:border-b-0 ${
+                          isActive ? 'bg-[#ff99e6]' : 'bg-white hover:bg-gray-100'
                         }`}
                       >
-                        {isActive && (
-                          <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-r-full" style={{ background: 'linear-gradient(to bottom, #f59e0b, #f97316)' }} />
-                        )}
                         <div className="mt-0.5 shrink-0 transition-transform group-hover:scale-110">
                           {isWatched ? (
-                            <CheckCircle2 className={`h-4 w-4 ${isActive ? 'text-emerald-400' : 'text-emerald-500/60'}`} />
+                            <CheckCircle2 className={`h-5 w-5 stroke-[3px] ${isActive ? 'text-black' : 'text-gray-800'}`} />
                           ) : (
-                            <Circle className={`h-4 w-4 ${isActive ? 'text-amber-400' : 'text-gray-600'}`} />
+                            <Circle className={`h-5 w-5 stroke-[3px] ${isActive ? 'text-black' : 'text-gray-400'}`} />
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className={`line-clamp-2 text-[13px] transition-colors ${isActive ? 'text-white font-semibold' : 'text-gray-400 group-hover:text-gray-200'}`}>
+                          <p className={`line-clamp-2 text-sm uppercase transition-colors ${isActive ? 'text-black font-black' : 'text-black font-bold group-hover:underline decoration-2 underline-offset-2'}`}>
                             {video.title}
                           </p>
-                          <span className={`mt-1 flex items-center gap-1 text-[11px] ${isActive ? 'text-amber-400/70' : 'text-gray-600'}`}>
-                            <Clock className="h-3 w-3" />
+                          <span className={`mt-1 flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider ${isActive ? 'text-black' : 'text-gray-600'}`}>
+                            <Clock className="h-3.5 w-3.5 stroke-[3px]" />
                             {formatDuration(video.duration)}
                           </span>
                         </div>
@@ -215,35 +212,34 @@ export default function CourseView() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-amber-400" />
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-white">
+        <Loader2 className="h-10 w-10 animate-spin text-black stroke-[3px]" />
       </div>
     );
   }
 
   if (error || !course) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-4">
-        <p className="text-gray-400">Course not found.</p>
-        <Link to="/dashboard" className="text-sm text-amber-400 hover:underline">
-          Back to dashboard
+      <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-4 bg-white text-black font-bold uppercase">
+        <p className="text-xl">Course not found.</p>
+        <Link to="/dashboard" className="text-sm bg-[#ff8c00] border-[2px] border-black brutal-shadow-sm px-4 py-2 hover:-translate-y-0.5 hover:-translate-x-0.5 transition-transform">
+          BACK TO DASHBOARD
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] relative overflow-hidden">
+    <div className="flex h-[calc(100vh-4rem)] relative overflow-hidden bg-white text-black">
       {/* Shortcuts modal */}
       <ShortcutsModal isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
 
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setSidebarOpen(true)}
-        className="fixed bottom-20 right-4 z-40 rounded-full p-3 shadow-lg lg:hidden hover:scale-110 transition-transform"
-        style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)', boxShadow: '0 4px 20px rgba(249, 115, 22, 0.4)' }}
+        className="fixed bottom-20 right-4 z-40 p-3 lg:hidden transition-all bg-[#ff99e6] border-[3px] border-black brutal-shadow hover:-translate-y-1"
       >
-        <Menu className="h-5 w-5 text-white" />
+        <Menu className="h-6 w-6 text-black stroke-[3px]" />
       </button>
 
       {/* Main content */}
@@ -251,9 +247,9 @@ export default function CourseView() {
         {currentVideo ? (
           <div className="animate-fade-in pb-20 sm:pb-10">
             {/* Video Player */}
-            <div className="w-full bg-black border-b border-white/[0.06]">
-              <div className="mx-auto max-w-5xl aspect-video lg:p-4">
-                <div className="w-full h-full lg:rounded-2xl overflow-hidden border border-white/[0.06] bg-black relative" style={{ boxShadow: '0 0 40px rgba(251, 146, 60, 0.08)' }}>
+            <div className="w-full bg-[#facc15] border-b-[3px] border-black">
+              <div className="mx-auto max-w-5xl aspect-video lg:p-6 lg:pb-0">
+                <div className="w-full h-full lg:rounded-none overflow-hidden border-[3px] border-black bg-black lg:border-b-0 relative xl:border-b-[3px] lg:brutal-shadow xl:mb-6">
                   <iframe
                     src={`https://www.youtube.com/embed/${currentVideo.youtube_id}?rel=0`}
                     title={currentVideo.title}
@@ -268,28 +264,28 @@ export default function CourseView() {
             {/* Below Video Content */}
             <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8 sm:px-6">
               {/* Title & Settings */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
-                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight">{currentVideo.title}</h2>
-                  <p className="mt-2 text-sm text-gray-400 font-medium bg-white/5 inline-flex items-center gap-2 px-3 py-1 rounded-full">
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold text-black uppercase tracking-tight leading-none">{currentVideo.title}</h2>
+                  <p className="mt-4 text-sm font-bold uppercase tracking-widest text-black bg-white border-[2px] border-black inline-flex items-center gap-2 px-3 py-1.5 brutal-shadow-sm">
                     <span>Video {currentIndex + 1} of {videos.length}</span>
                     {currentVideo.duration > 0 && <span>· {formatDuration(currentVideo.duration)}</span>}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   {/* Desktop sidebar toggle */}
                   <button
                     onClick={() => setDesktopSidebarOpen(!desktopSidebarOpen)}
-                    className="hidden lg:flex shrink-0 rounded-xl border border-white/10 p-2.5 text-gray-400 transition-all hover:text-white hover:bg-white/5"
+                    className="hidden lg:flex shrink-0 border-[2px] border-black bg-[#ff8c00] p-2.5 text-black brutal-shadow-sm transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5"
                     title={desktopSidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
                   >
-                    {desktopSidebarOpen ? <PanelRightClose className="h-5 w-5" /> : <PanelRightOpen className="h-5 w-5" />}
+                    {desktopSidebarOpen ? <PanelRightClose className="h-5 w-5 stroke-[2.5px]" /> : <PanelRightOpen className="h-5 w-5 stroke-[2.5px]" />}
                   </button>
                   <Link
                     to={`/courses/${id}/settings`}
-                    className="shrink-0 rounded-xl border border-white/10 p-2.5 text-gray-400 transition-all hover:text-white hover:bg-white/5"
+                    className="shrink-0 border-[2px] border-black bg-white p-2.5 text-black brutal-shadow-sm transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 hover:bg-black/5"
                   >
-                    <Settings className="h-5 w-5" />
+                    <Settings className="h-5 w-5 stroke-[2.5px]" />
                   </Link>
                 </div>
               </div>
@@ -299,65 +295,64 @@ export default function CourseView() {
                 <button
                   onClick={handlePrev}
                   disabled={currentIndex <= 0}
-                  className="btn-secondary px-4 py-2.5 text-sm disabled:opacity-30"
+                  className="btn-secondary px-5 py-3 text-sm disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                 >
-                  <ChevronLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Previous</span>
+                  <ChevronLeft className="h-5 w-5 stroke-[3px]" />
+                  <span className="hidden sm:inline ml-1 font-bold uppercase">PREV</span>
                 </button>
 
                 <button
                   onClick={handleToggleWatched}
-                  className={`flex items-center gap-2 rounded-xl px-5 sm:px-6 py-2.5 text-sm font-bold transition-all duration-300 ${
+                  className={`flex items-center gap-2 px-6 sm:px-8 py-3 text-sm font-black uppercase tracking-wider transition-all duration-200 border-[3px] border-black brutal-shadow hover:-translate-y-1 hover:-translate-x-1 active:translate-y-1 active:translate-x-1 active:shadow-none ${
                     isWatched
-                      ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25'
-                      : 'btn-primary'
+                      ? 'bg-white text-black'
+                      : 'bg-[#ff99e6] text-black'
                   }`}
-                  style={!isWatched ? { boxShadow: '0 4px 15px rgba(249, 115, 22, 0.3)' } : {}}
                 >
-                  <CheckCircle2 className="h-5 w-5" />
-                  {isWatched ? 'Completed' : 'Mark Watched'}
+                  <CheckCircle2 className="h-6 w-6 stroke-[3px]" />
+                  {isWatched ? 'COMPLETED' : 'MARK WATCHED'}
                 </button>
 
                 <button
                   onClick={handleNext}
                   disabled={currentIndex >= videos.length - 1}
-                  className="btn-secondary px-4 py-2.5 text-sm disabled:opacity-30"
+                  className="btn-secondary px-5 py-3 text-sm disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-row-reverse sm:flex-row"
                 >
-                  <span className="hidden sm:inline">Next</span>
-                  <ChevronRight className="h-4 w-4" />
+                  <span className="hidden sm:inline mr-1 font-bold uppercase">NEXT</span>
+                  <ChevronRight className="h-5 w-5 stroke-[3px]" />
                 </button>
               </div>
 
               {/* Quiz — oriented with video (right below player) */}
-              <div className="mt-6 sm:mt-8 animate-slide-up">
+              <div className="mt-8 sm:mt-10 animate-slide-up">
                 <VideoQuiz videoId={currentVideo.id} />
               </div>
 
               {/* AI Summary */}
-              <div className="mt-6">
+              <div className="mt-8">
                 <VideoSummary videoId={currentVideo.id} />
               </div>
 
               {currentVideo.description && (
-                <div className="mt-6 card-warm">
+                <div className="mt-8 brutal-card bg-white p-0 overflow-hidden">
                   <div 
-                    className="p-5 sm:p-6 flex items-center justify-between cursor-pointer group"
+                    className="p-5 sm:p-6 flex items-center justify-between cursor-pointer group bg-[#facc15] hover:bg-[#ff8c00] transition-colors"
                     onClick={() => setDescExpanded(!descExpanded)}
                   >
-                    <h3 className="text-sm font-bold tracking-wider uppercase text-amber-400/70">Description</h3>
-                    <div className="text-gray-400 group-hover:text-white transition-colors">
-                      {descExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    <h3 className="text-base font-black tracking-widest uppercase text-black">Description</h3>
+                    <div className="text-black bg-white border-[2px] border-black p-1 brutal-shadow-sm group-hover:-translate-y-0.5 transition-transform">
+                      {descExpanded ? <ChevronUp className="h-5 w-5 stroke-[3px]" /> : <ChevronDown className="h-5 w-5 stroke-[3px]" />}
                     </div>
                   </div>
                   {descExpanded && (
-                    <div className="prose prose-invert max-w-none text-sm text-gray-400 tracking-wide font-light px-5 sm:px-6 pb-5 sm:pb-6 pt-0 border-t border-white/[0.04]">
-                      <p className="whitespace-pre-wrap mt-4">{currentVideo.description}</p>
+                    <div className="prose prose-lg max-w-none text-black font-medium tracking-wide px-5 sm:px-6 pb-5 sm:pb-6 pt-0 border-t-[3px] border-black bg-white">
+                      <p className="whitespace-pre-wrap mt-6 leading-relaxed">{currentVideo.description}</p>
                     </div>
                   )}
                 </div>
               )}
 
-              <div className="mt-6 grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
+              <div className="mt-8 grid gap-6 grid-cols-1 lg:grid-cols-2">
                 <div className="animate-slide-up" style={{ animationDelay: '100ms' }}>
                   <VideoNotes videoId={currentVideo.id} />
                 </div>
@@ -368,11 +363,13 @@ export default function CourseView() {
             </div>
           </div>
         ) : (
-          <div className="flex h-full items-center justify-center p-8">
-            <div className="card-warm text-center p-8 sm:p-12 max-w-md w-full animate-fade-in border-dashed border-2 border-white/10">
-              <PlayCircle className="h-12 w-12 text-amber-400/40 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Ready to learn?</h3>
-              <p className="text-gray-400 font-light">Select a video from the sidebar to start watching your course.</p>
+          <div className="flex h-full items-center justify-center p-8 bg-white">
+            <div className="brutal-card bg-[#facc15] text-center p-8 sm:p-12 max-w-md w-full animate-fade-in">
+              <div className="bg-white border-[3px] border-black w-20 h-20 mx-auto mb-6 flex items-center justify-center brutal-shadow">
+                <PlayCircle className="h-10 w-10 text-black stroke-[3px]" />
+              </div>
+              <h3 className="text-3xl font-display font-extrabold text-black uppercase mb-4">Ready to learn?</h3>
+              <p className="text-black font-bold text-lg">Select a video from the sidebar to start watching your course.</p>
             </div>
           </div>
         )}
@@ -398,7 +395,7 @@ export default function CourseView() {
 
       {/* Sidebar - desktop */}
       {desktopSidebarOpen && (
-        <div className="hidden lg:block w-80 shrink-0 z-10 border-l border-white/[0.06]" style={{ boxShadow: '-5px 0 25px rgba(0,0,0,0.3)' }}>
+        <div className="hidden lg:block w-80 shrink-0 z-10 border-l-[3px] border-black bg-white brutal-shadow">
           <VideoSidebar
             courseId={course.id}
             modules={modules}
