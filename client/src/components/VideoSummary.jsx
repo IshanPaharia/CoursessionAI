@@ -17,23 +17,23 @@ export default function VideoSummary({ videoId }) {
   }, [videoId, isLoading, summary, generateSummary.isPending]);
 
   return (
-    <div className="brutal-card bg-[#ff8c00] p-4 sm:p-5 text-black">
+    <div className="learning-card p-4 sm:p-6 bg-surface">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 stroke-[2.5px]" />
-          <h3 className="text-base font-black uppercase tracking-widest text-black">AI Summary</h3>
+        <div className="flex items-center gap-2 text-primary">
+          <Sparkles className="h-5 w-5" />
+          <h3 className="text-base font-semibold tracking-tight text-on-surface">AI Summary</h3>
         </div>
       </div>
 
       {(isLoading || generateSummary.isPending) && (
-        <div className="mt-4 flex items-center justify-center py-4">
-          <Loader2 className="h-8 w-8 animate-spin stroke-[3px]" />
+        <div className="mt-6 flex items-center justify-center py-6 text-on-surface-variant">
+          <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       )}
 
       {summary && (
-        <div className="mt-4 bg-white border-[3px] border-black p-4 brutal-shadow-sm">
-          <p className="text-sm sm:text-base font-medium leading-relaxed text-black">{summary}</p>
+        <div className="mt-6">
+          <p className="text-sm sm:text-base font-medium leading-relaxed text-on-surface-variant">{summary}</p>
         </div>
       )}
     </div>

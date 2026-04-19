@@ -34,34 +34,38 @@ function CertificateCard({ certificate }) {
       <head>
         <title>Certificate - ${certificate.course_title}</title>
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f8f8f8; }
           .cert {
             width: 900px; padding: 60px; background: white;
-            border: 3px solid #1a1a2e; position: relative;
+            border: 1px solid #e5e7eb; position: relative;
             text-align: center; font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border-radius: 12px;
           }
-          .cert::before {
-            content: ''; position: absolute; inset: 10px;
-            border: 1px solid #f59e0b; pointer-events: none;
+          .cert h1 { font-size: 42px; color: #111827; margin-bottom: 12px; font-weight: 700; letter-spacing: -0.02em; }
+          .cert .sub { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 30px; font-weight: 600; }
+          .cert .name { font-size: 28px; font-weight: 700; color: #111827; margin: 20px 0 8px; }
+          .cert .course { font-size: 22px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+          .cert .date { font-size: 14px; color: #6b7280; margin-top: 24px; font-weight: 500; }
+          .cert .id { font-size: 11px; color: #9ca3af; margin-top: 24px; font-family: monospace; }
+          .divider { height: 1px; width: 100px; background: #e5e7eb; margin: 24px auto; }
+          @media print { 
+            @page { margin: 0; }
+            body { background: white; } 
+            .cert { border: 1px solid #e5e7eb; box-shadow: none; } 
           }
-          .cert h1 { font-family: 'Playfair Display', serif; font-size: 42px; color: #1a1a2e; margin-bottom: 12px; }
-          .cert .sub { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 30px; }
-          .cert .name { font-size: 28px; font-weight: 600; color: #f59e0b; margin: 20px 0 8px; }
-          .cert .course { font-size: 22px; font-weight: 600; color: #1a1a2e; margin-bottom: 8px; }
-          .cert .date { font-size: 14px; color: #666; margin-top: 24px; }
-          .cert .id { font-size: 11px; color: #aaa; margin-top: 24px; }
-          @media print { body { background: white; } .cert { border: 3px solid #1a1a2e; } }
         </style>
       </head>
       <body>
         <div class="cert">
           <div class="sub">Certificate of Completion</div>
           <h1>CoursessionAI</h1>
-          <p style="margin: 16px 0 8px; color: #666;">This certifies that</p>
+          <div class="divider"></div>
+          <p style="margin: 16px 0 8px; color: #6b7280; font-size: 14px; font-weight: 500;">This certifies that</p>
           <p class="name">${certificate.display_name || certificate.email}</p>
-          <p style="color: #666; margin-bottom: 8px;">has successfully completed</p>
+          <p style="color: #6b7280; margin-bottom: 8px; font-size: 14px; font-weight: 500;">has successfully completed</p>
           <p class="course">${certificate.course_title}</p>
           <p class="date">${formatDate(certificate.completed_at)}</p>
           <p class="id">Certificate ID: ${certificate.certificate_uid}</p>
@@ -74,26 +78,26 @@ function CertificateCard({ certificate }) {
   };
 
   return (
-    <div className="space-y-5 sm:space-y-6">
+    <div className="space-y-6">
       {/* Certificate preview */}
-      <div className="rounded-xl border-2 border-amber-500/30 px-6 sm:px-8 py-8 sm:py-10 text-center" style={{ background: 'linear-gradient(135deg, rgba(17, 17, 24, 1), rgba(21, 21, 31, 1))' }}>
-        <p className="text-[10px] sm:text-xs font-medium uppercase tracking-[4px] text-gray-500">
+      <div className="rounded-xl border border-outline-variant bg-surface-container px-6 sm:px-8 py-8 sm:py-10 text-center shadow-sm">
+        <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[4px] text-on-surface-variant">
           Certificate of Completion
         </p>
-        <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-gradient">
+        <h2 className="mt-3 text-2xl sm:text-3xl font-display font-bold text-on-surface">
           CoursessionAI
         </h2>
-        <div className="mx-auto my-5 sm:my-6 h-px w-32 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
-        <p className="text-sm text-gray-400">This certifies that</p>
-        <p className="mt-2 text-lg sm:text-xl font-semibold text-white">
+        <div className="mx-auto my-5 sm:my-6 h-px w-24 bg-outline-variant" />
+        <p className="text-sm font-medium text-on-surface-variant">This certifies that</p>
+        <p className="mt-2 text-lg sm:text-xl font-bold text-on-surface">
           {certificate.display_name || certificate.email}
         </p>
-        <p className="mt-3 text-sm text-gray-400">has successfully completed</p>
-        <p className="mt-2 text-base sm:text-lg font-semibold text-amber-300">
+        <p className="mt-3 text-sm font-medium text-on-surface-variant">has successfully completed</p>
+        <p className="mt-2 text-base sm:text-lg font-bold text-on-surface">
           {certificate.course_title}
         </p>
-        <p className="mt-4 text-xs text-gray-500">{formatDate(certificate.completed_at)}</p>
-        <p className="mt-2 font-mono text-[10px] text-gray-600">
+        <p className="mt-5 text-xs font-medium text-on-surface-variant">{formatDate(certificate.completed_at)}</p>
+        <p className="mt-2 font-mono text-[10px] text-on-surface-variant/60">
           ID: {certificate.certificate_uid}
         </p>
       </div>
@@ -102,14 +106,14 @@ function CertificateCard({ certificate }) {
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={handlePrint}
-          className="btn-secondary flex-1 py-2.5 justify-center"
+          className="btn-secondary flex-1 py-2.5 justify-center rounded-md border border-outline-variant font-semibold text-sm"
         >
           <Download className="h-4 w-4" />
           Print / Save PDF
         </button>
         <button
           onClick={handleShare}
-          className="btn-primary flex-1 py-2.5 justify-center"
+          className="btn-primary flex-1 py-2.5 justify-center font-semibold text-sm"
         >
           <Share2 className="h-4 w-4" />
           Share
@@ -129,59 +133,61 @@ export default function CertificateModal({ isOpen, onClose, courseId, courseTitl
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 p-5 sm:p-6 shadow-2xl" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-        <div className="mb-4 flex items-center justify-between">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={onClose} />
+      <div className="relative w-full max-w-lg rounded-xl border border-outline-variant p-6 sm:p-8 shadow-xl bg-surface animate-slide-up">
+        <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-amber-400" />
-            <h2 className="text-lg font-bold text-white">Certificate</h2>
+            <Award className="h-5 w-5 text-on-surface" />
+            <h2 className="text-lg font-display font-semibold text-on-surface">Certificate</h2>
           </div>
-          <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:text-white transition-colors">
-            <X className="h-5 w-5" />
+          <button onClick={onClose} className="rounded-md p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-amber-400" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         ) : certificate ? (
           <CertificateCard certificate={certificate} />
         ) : isComplete ? (
           <div className="text-center py-8">
-            <Award className="mx-auto mb-4 h-16 w-16 text-amber-400/50" />
-            <h3 className="text-lg font-semibold text-white">Congratulations! 🎉</h3>
-            <p className="mt-1 text-sm text-gray-400">
-              You've completed <strong className="text-white">{courseTitle}</strong>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container">
+              <Award className="h-8 w-8 text-on-surface-variant" />
+            </div>
+            <h3 className="text-xl font-display font-semibold text-on-surface">Congratulations!</h3>
+            <p className="mt-2 text-sm text-on-surface-variant font-medium">
+              You've completed <strong className="text-on-surface font-semibold">{courseTitle}</strong>
             </p>
             <button
               onClick={() => generateCert.mutate(courseId)}
               disabled={generateCert.isPending}
-              className="mt-6 btn-primary w-full py-3 justify-center disabled:opacity-50"
+              className="mt-6 btn-primary w-full py-3 justify-center text-sm disabled:opacity-50"
             >
               {generateCert.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Award className="h-4 w-4" />
               )}
-              Generate Certificate
+              Claim Certificate
             </button>
             {generateCert.isError && (
-              <p className="mt-2 text-xs text-red-400">
+              <p className="mt-3 text-sm font-medium text-red-500">
                 {generateCert.error?.response?.data?.error || 'Failed to generate certificate'}
               </p>
             )}
           </div>
         ) : (
           <div className="text-center py-8">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
-              <CheckCircle2 className="h-8 w-8 text-gray-600" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container">
+              <CheckCircle2 className="h-8 w-8 text-on-surface-variant" />
             </div>
-            <h3 className="text-lg font-semibold text-white">Not Completed Yet</h3>
-            <p className="mt-1 text-sm text-gray-400">
+            <h3 className="text-xl font-display font-semibold text-on-surface">Not Completed Yet</h3>
+            <p className="mt-2 text-sm text-on-surface-variant font-medium">
               Complete all videos to earn your certificate.
             </p>
-            <p className="mt-3 text-sm font-medium text-amber-400">{Math.round(progress)}% done</p>
+            <p className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-surface-container text-sm font-semibold text-on-surface">{Math.round(progress)}% progressed</p>
           </div>
         )}
       </div>

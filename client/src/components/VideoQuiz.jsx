@@ -52,28 +52,28 @@ export default function VideoQuiz({ videoId }) {
 
   if (!quiz) {
     return (
-      <div className="brutal-card bg-[#ff99e6] p-0 overflow-hidden text-black transition-all">
+      <div className="learning-card p-0 overflow-hidden transition-all bg-surface">
         <div 
-          className="p-4 sm:p-5 flex items-center justify-between cursor-pointer group bg-white border-b-[3px] border-black"
+          className="p-4 sm:p-5 flex items-center justify-between cursor-pointer group"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 stroke-[2.5px]" />
-            <h3 className="text-base font-black uppercase tracking-widest text-black">Video Quiz</h3>
+            <Sparkles className="h-5 w-5 text-primary" />
+            <h3 className="text-base font-semibold tracking-tight">Video Quiz</h3>
           </div>
           <div className="flex items-center gap-3">
-            <div className="text-black bg-[#ff99e6] border-[2px] border-black p-1 brutal-shadow-sm group-hover:-translate-y-0.5 transition-transform">
-              {isExpanded ? <ChevronUp className="h-5 w-5 stroke-[3px]" /> : <ChevronDown className="h-5 w-5 stroke-[3px]" />}
+            <div className="text-on-surface-variant p-1 rounded-sm group-hover:bg-surface-container transition-colors">
+              {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
             </div>
           </div>
         </div>
         
         {isExpanded && (
-          <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0">
+          <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0 border-t border-outline-variant">
             {(isLoading || generateQuiz.isPending) ? (
-              <div className="flex flex-col items-center justify-center py-6 text-center">
-                <Loader2 className="h-8 w-8 animate-spin text-black stroke-[3px] mb-3" />
-                <p className="text-sm font-bold uppercase text-black">Generating quiz questions focused on this video...</p>
+              <div className="flex flex-col items-center justify-center py-6 text-center text-on-surface-variant">
+                <Loader2 className="h-8 w-8 animate-spin mb-3 text-primary" />
+                <p className="text-sm font-medium">Generating quiz questions focused on this video...</p>
               </div>
             ) : null}
           </div>
@@ -83,18 +83,18 @@ export default function VideoQuiz({ videoId }) {
   }
 
   return (
-    <div className="brutal-card bg-[#ff99e6] p-0 overflow-hidden text-black transition-all">
+    <div className="learning-card p-0 overflow-hidden transition-all bg-surface">
       <div 
-        className="p-4 sm:p-5 flex items-center justify-between cursor-pointer group bg-white border-b-[3px] border-black"
+        className="p-4 sm:p-5 flex items-center justify-between cursor-pointer group"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 stroke-[2.5px]" />
-          <h3 className="text-base font-black uppercase tracking-widest text-black flex items-center gap-3">
+          <Sparkles className="h-5 w-5 text-primary" />
+          <h3 className="text-base font-semibold tracking-tight flex items-center gap-3">
             Video Quiz
             {submitted && result && (
-              <span className="bg-[#facc15] px-2 py-0.5 border-[2px] border-black brutal-shadow-sm text-sm">
-                SCORE: {result.score}/{result.totalQuestions}
+              <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-sm text-sm font-medium">
+                Score: {result.score}/{result.totalQuestions}
               </span>
             )}
           </h3>
@@ -103,44 +103,44 @@ export default function VideoQuiz({ videoId }) {
           <button
             onClick={handleGenerate}
             disabled={generateQuiz.isPending}
-            className="hidden sm:flex items-center gap-1.5 border-[2px] border-black bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-black transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 brutal-shadow-sm disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-outline-variant hover:bg-surface-container transition-colors disabled:opacity-50"
           >
             {generateQuiz.isPending ? (
-              <Loader2 className="h-4 w-4 stroke-[3px] animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <RotateCcw className="h-4 w-4 stroke-[3px]" />
+              <RotateCcw className="h-3.5 w-3.5" />
             )}
             {generateQuiz.isPending ? 'Generating...' : 'New Quiz'}
           </button>
-          <div className="text-black bg-[#ff99e6] border-[2px] border-black p-1 brutal-shadow-sm group-hover:-translate-y-0.5 transition-transform">
-            {isExpanded ? <ChevronUp className="h-5 w-5 stroke-[3px]" /> : <ChevronDown className="h-5 w-5 stroke-[3px]" />}
+          <div className="text-on-surface-variant p-1 rounded-sm group-hover:bg-surface-container transition-colors">
+            {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
           </div>
         </div>
       </div>
 
       {isExpanded && (
-        <div className="px-4 sm:px-5 pb-5 pt-0">
-          <div className="space-y-4 sm:space-y-5 pt-4 sm:pt-5">
+        <div className="px-4 sm:px-5 pb-5 pt-0 border-t border-outline-variant">
+          <div className="space-y-6 sm:space-y-8 pt-4 sm:pt-6">
             {questions.map((q, qIndex) => (
-              <div key={qIndex} className="bg-white border-[3px] border-black p-4 sm:p-5 brutal-shadow-sm">
-                <p className="mb-4 text-base font-black uppercase tracking-wide text-black leading-snug">
+              <div key={qIndex} className="bg-surface rounded-md">
+                <p className="mb-4 text-base font-medium leading-relaxed">
                   {qIndex + 1}. {q.question}
                 </p>
-                <div className="space-y-2 sm:space-y-3">
+                <div className="space-y-2">
                   {q.options.map((option, oIndex) => {
                     const isSelected = selectedAnswers[qIndex] === oIndex;
                     const isCorrect = submitted && oIndex === q.correctAnswer;
                     const isWrong = submitted && isSelected && oIndex !== q.correctAnswer;
 
-                    let classes = 'flex items-center gap-3 border-[2px] border-black px-4 py-3 text-sm font-bold transition-transform cursor-pointer ';
+                    let classes = 'flex items-center gap-3 border px-4 py-3 text-sm font-medium transition-all rounded-md cursor-pointer ';
                     if (isCorrect) {
-                      classes += 'bg-emerald-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
+                      classes += 'bg-green-50 text-green-700 border-green-500 shadow-sm';
                     } else if (isWrong) {
-                      classes += 'bg-red-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
+                      classes += 'bg-red-50 text-red-700 border-red-500 shadow-sm';
                     } else if (isSelected) {
-                      classes += 'bg-[#ff8c00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
+                      classes += 'bg-primary/5 text-primary border-primary shadow-sm';
                     } else {
-                      classes += 'bg-gray-50 text-black hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]';
+                      classes += 'bg-surface text-on-surface border-outline-variant hover:border-primary/50 hover:bg-surface-container';
                     }
 
                     return (
@@ -151,12 +151,12 @@ export default function VideoQuiz({ videoId }) {
                         disabled={submitted}
                       >
                         {isCorrect ? (
-                          <CheckCircle2 className="h-5 w-5 shrink-0 stroke-[3px]" />
+                          <CheckCircle2 className="h-5 w-5 shrink-0 text-green-600" />
                         ) : isWrong ? (
-                          <XCircle className="h-5 w-5 shrink-0 stroke-[3px]" />
+                          <XCircle className="h-5 w-5 shrink-0 text-red-600" />
                         ) : (
-                          <div className={`h-5 w-5 shrink-0 rounded-none border-[2px] border-black transition-colors ${
-                            isSelected ? 'bg-black' : 'bg-white'
+                          <div className={`h-4 w-4 shrink-0 rounded-full border transition-colors ${
+                            isSelected ? 'border-primary border-4' : 'border-outline-variant'
                           }`} />
                         )}
                         <span className="text-left">{option}</span>
@@ -172,9 +172,9 @@ export default function VideoQuiz({ videoId }) {
             <button
               onClick={handleSubmit}
               disabled={Object.keys(selectedAnswers).length < questions.length || submitQuiz.isPending}
-              className="mt-6 btn-primary w-full py-3.5 justify-center bg-white text-black text-lg disabled:opacity-50"
+              className="mt-8 btn-primary w-full py-3.5 justify-center flex text-sm disabled:opacity-50"
             >
-              {submitQuiz.isPending ? 'SUBMITTING...' : 'SUBMIT ANSWERS'}
+              {submitQuiz.isPending ? 'Submitting...' : 'Submit Answers'}
             </button>
           )}
 
@@ -182,12 +182,12 @@ export default function VideoQuiz({ videoId }) {
           <button
             onClick={handleGenerate}
             disabled={generateQuiz.isPending}
-            className="mt-4 sm:hidden flex w-full items-center justify-center gap-2 border-[2px] border-black bg-white px-4 py-3 text-sm font-bold uppercase tracking-widest text-black transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 brutal-shadow-sm disabled:opacity-50"
+            className="mt-4 sm:hidden flex w-full items-center justify-center gap-2 border border-outline-variant bg-surface px-4 py-3 text-sm font-medium rounded-md hover:bg-surface-container transition-colors disabled:opacity-50"
           >
             {generateQuiz.isPending ? (
-              <Loader2 className="h-5 w-5 stroke-[3px] animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin text-on-surface-variant" />
             ) : (
-              <RotateCcw className="h-5 w-5 stroke-[3px]" />
+              <RotateCcw className="h-4 w-4 text-on-surface-variant" />
             )}
             {generateQuiz.isPending ? 'Generating...' : 'New Quiz'}
           </button>

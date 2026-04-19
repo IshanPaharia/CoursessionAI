@@ -39,21 +39,21 @@ export default function VideoNotes({ videoId }) {
   if (isLoading) return null;
 
   return (
-    <div className="brutal-card bg-[#facc15] p-4 sm:p-5 text-black">
+    <div className="learning-card p-4 sm:p-6 bg-surface flex flex-col h-full">
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <StickyNote className="h-5 w-5 stroke-[2.5px]" />
-          <h3 className="text-base font-black uppercase tracking-widest text-black">Notes</h3>
+        <div className="flex items-center gap-2 text-primary">
+          <StickyNote className="h-5 w-5" />
+          <h3 className="text-base font-semibold tracking-tight text-on-surface">Notes</h3>
         </div>
         <div className="flex items-center gap-3">
-          {dirty && <span className="text-[11px] font-bold uppercase tracking-wider text-black bg-white px-1.5 py-0.5 border-[2px] border-black brutal-shadow-sm">Unsaved</span>}
-          {saveNote.isPending && <Loader2 className="h-4 w-4 animate-spin text-black stroke-[3px]" />}
+          {dirty && <span className="text-xs font-semibold text-on-surface-variant bg-surface-container px-2 py-1 rounded-sm">Unsaved</span>}
+          {saveNote.isPending && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
           <button
             onClick={handleSave}
             disabled={!dirty || saveNote.isPending}
-            className="flex items-center gap-1 bg-white border-[2px] border-black px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-black hover:-translate-y-0.5 hover:-translate-x-0.5 brutal-shadow-sm transition-transform disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+            className="flex items-center gap-1.5 border border-outline-variant rounded-md px-3 py-1.5 text-xs font-semibold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-50"
           >
-            <Save className="h-4 w-4 stroke-[3px]" />
+            <Save className="h-4 w-4" />
             Save
           </button>
         </div>
@@ -63,7 +63,7 @@ export default function VideoNotes({ videoId }) {
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Add your notes for this video..."
         rows={6}
-        className="w-full resize-none rounded-none border-[3px] border-black bg-white px-4 py-3 text-sm text-black font-medium placeholder-gray-500 outline-none transition-all brutal-shadow-sm focus:translate-x-1 focus:translate-y-1 focus:shadow-none bg-grid-pattern"
+        className="w-full flex-1 resize-none rounded-md border border-outline-variant bg-surface px-4 py-3 text-sm text-on-surface font-medium placeholder-on-surface-variant outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
       />
     </div>
   );

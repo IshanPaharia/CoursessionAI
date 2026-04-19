@@ -4,6 +4,7 @@ import AppLayout from './components/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthSync from './components/AuthSync';
 import { ToastProvider } from './components/Toast';
+import { ThemeProvider } from './components/ThemeProvider';
 import LandingPage from './pages/LandingPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
@@ -24,51 +25,53 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-      <AuthSync>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/sign-in/*" element={<SignInPage />} />
-              <Route path="/sign-up/*" element={<SignUpPage />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/courses/:id"
-                element={
-                  <ProtectedRoute>
-                    <CourseView />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/courses/:id/settings"
-                element={
-                  <ProtectedRoute>
-                    <CourseSettings />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </AuthSync>
-      </ToastProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthSync>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<AppLayout />}>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/sign-in/*" element={<SignInPage />} />
+                  <Route path="/sign-up/*" element={<SignUpPage />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/courses/:id"
+                    element={
+                      <ProtectedRoute>
+                        <CourseView />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/courses/:id/settings"
+                    element={
+                      <ProtectedRoute>
+                        <CourseSettings />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <ProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </AuthSync>
+        </ToastProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -44,31 +44,31 @@ export default function Dashboard() {
   const handleCreateTag = (e) => {
     e.preventDefault();
     if (!newTagName.trim()) return;
-    const colors = ['#f59e0b', '#f97316', '#f43f5e', '#10b981', '#3b82f6', '#8b5cf6'];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    createTag.mutate({ name: newTagName.trim(), color });
+    createTag.mutate({ name: newTagName.trim(), color: '#888888' });
     setNewTagName('');
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6 relative pb-20 sm:pb-8 text-black">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 relative pb-20 sm:pb-8">
 
       {/* Header */}
-      <div className="mb-6 sm:mb-8 animate-fade-in">
-        <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-black tracking-tight uppercase">My <span className="text-[#ff8c00]">Courses</span></h1>
-        <p className="mt-1.5 sm:mt-2 text-sm sm:text-base text-gray-800 font-medium">
+      <div className="mb-8 animate-fade-in">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight">
+          My <span className="text-secondary">Courses</span>
+        </h1>
+        <p className="mt-2 text-on-surface-variant font-medium">
           Paste a YouTube playlist URL to create a new course.
         </p>
       </div>
 
       {/* Add Course Form */}
-      <form onSubmit={handleCreate} className="mb-6 sm:mb-8 flex flex-col gap-3 sm:flex-row animate-slide-up" style={{ animationDelay: '100ms' }}>
+      <form onSubmit={handleCreate} className="mb-8 flex flex-col gap-3 sm:flex-row animate-slide-up" style={{ animationDelay: '100ms' }}>
         <input
           type="text"
           value={playlistUrl}
           onChange={(e) => setPlaylistUrl(e.target.value)}
           placeholder="https://www.youtube.com/playlist?list=..."
-          className="input-field flex-1 text-lg"
+          className="input-field flex-1"
           disabled={createCourse.isPending}
         />
         <button
@@ -77,9 +77,9 @@ export default function Dashboard() {
           className="btn-primary"
         >
           {createCourse.isPending ? (
-            <Loader2 className="h-6 w-6 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
-            <Plus className="h-6 w-6 stroke-[3px]" />
+            <Plus className="h-5 w-5" />
           )}
           ADD COURSE
         </button>
@@ -87,7 +87,7 @@ export default function Dashboard() {
 
       {/* Error */}
       {createCourse.isError && (
-        <div className="mb-6 brutal-card bg-[#ff99e6] px-5 py-4 text-sm font-bold animate-fade-in">
+        <div className="mb-8 bg-red-500/10 text-red-500 border border-red-500/20 rounded-md px-5 py-4 text-sm font-medium animate-fade-in">
           {createCourse.error?.response?.data?.error
             || createCourse.error?.message
             || 'Failed to create course. Please check the URL and try again.'}
@@ -100,25 +100,25 @@ export default function Dashboard() {
       </div>
 
       {/* Search & Tags */}
-      <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4 animate-slide-up bg-white brutal-card p-4 sm:p-5" style={{ animationDelay: '300ms' }}>
+      <div className="mb-8 space-y-4 animate-slide-up bg-surface border border-outline-variant rounded-md p-5" style={{ animationDelay: '300ms' }}>
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500 stroke-[3px]" />
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-on-surface-variant" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="SEARCH COURSES..."
-            className="input-field !pl-12 font-bold uppercase"
+            className="input-field !pl-11"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setSelectedTag(null)}
-            className={`rounded-none px-3.5 py-2 text-xs font-bold uppercase tracking-wider transition-transform border-[2px] border-black ${
+            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors border ${
               !selectedTag
-                ? 'bg-[#ff8c00] text-black brutal-shadow-sm translate-x-[-2px] translate-y-[-2px]'
-                : 'bg-white text-black hover:bg-black/5 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[2px_2px_0px_0px_#000]'
+                ? 'bg-primary text-on-primary border-primary'
+                : 'bg-surface text-on-surface hover:bg-surface-container border-outline-variant'
             }`}
           >
             All
@@ -127,13 +127,12 @@ export default function Dashboard() {
             <div key={tag.id} className="group/tag relative flex items-center">
               <button
                 onClick={() => setSelectedTag(selectedTag === tag.id ? null : tag.id)}
-                className={`flex items-center gap-2 rounded-none px-3.5 py-2 text-xs font-bold uppercase tracking-wider transition-transform border-[2px] border-black ${
+                className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors border ${
                   selectedTag === tag.id
-                    ? 'bg-[#ff99e6] text-black brutal-shadow-sm translate-x-[-2px] translate-y-[-2px]'
-                    : 'bg-white text-black hover:bg-black/5 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[2px_2px_0px_0px_#000]'
+                    ? 'bg-primary text-on-primary border-primary'
+                    : 'bg-surface text-on-surface hover:bg-surface-container border-outline-variant'
                 }`}
               >
-                <span className="inline-block h-2 w-2 rounded-full border border-black" style={{ backgroundColor: tag.color }} />
                 {tag.name}
               </button>
               <button
@@ -144,10 +143,10 @@ export default function Dashboard() {
                     deleteTag.mutate(tag.id);
                   }
                 }}
-                className="absolute -right-2 -top-2 hidden h-5 w-5 items-center justify-center bg-black text-[10px] text-white group-hover/tag:flex hover:bg-red-500 transition-colors border-2 border-white shadow-md z-10"
+                className="absolute -right-2 -top-2 hidden h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white group-hover/tag:flex transition-opacity shadow-sm z-10"
                 title="Delete tag"
               >
-                <X className="h-3 w-3 stroke-[3px]" />
+                <X className="h-3 w-3" />
               </button>
             </div>
           ))}
@@ -155,15 +154,15 @@ export default function Dashboard() {
             <input
               value={newTagName}
               onChange={(e) => setNewTagName(e.target.value)}
-              placeholder="NEW TAG..."
-              className="w-24 sm:w-28 rounded-none border-[2px] border-black bg-white px-3 py-2 text-xs font-bold uppercase text-black outline-none transition-all focus:bg-[#ff99e6] focus:w-32 shadow-[2px_2px_0px_0px_#000000]"
+              placeholder="New Tag..."
+              className="w-28 rounded-md border border-outline-variant bg-surface px-3 py-2 text-sm font-medium text-on-surface outline-none transition-all focus:border-primary focus:w-32"
             />
             <button
               type="submit"
               disabled={!newTagName.trim()}
-              className="flex h-8 w-8 items-center justify-center rounded-none border-[2px] border-black bg-[#ff8c00] text-black hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[2px_2px_0px_0px_#000000] transition-all disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+              className="flex h-9 w-9 items-center justify-center rounded-md border border-outline-variant bg-surface text-on-surface hover:bg-surface-container transition-colors disabled:opacity-50"
             >
-              <Plus className="h-4 w-4 stroke-[3px]" />
+              <Plus className="h-4 w-4" />
             </button>
           </form>
         </div>
@@ -175,13 +174,13 @@ export default function Dashboard() {
           {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)}
         </div>
       ) : courses?.length === 0 ? (
-        <div className="brutal-card flex flex-col items-center justify-center py-16 sm:py-24 text-center mx-auto w-full max-w-2xl mt-6 sm:mt-10 bg-white">
-          <div className="mb-6 border-[3px] border-black bg-[#ff8c00] p-5 brutal-shadow">
-            <Plus className="h-10 w-10 text-black stroke-[3px]" />
+        <div className="learning-card flex flex-col items-center justify-center py-16 text-center mx-auto w-full max-w-2xl mt-8">
+          <div className="mb-6 rounded-full bg-surface-container p-5">
+            <Plus className="h-8 w-8 text-on-surface-variant" />
           </div>
-          <h2 className="font-display text-3xl font-extrabold uppercase line-clamp-2">No courses yet</h2>
-          <p className="mt-3 text-base text-gray-800 font-medium max-w-sm px-4">
-            Paste a YouTube playlist URL above to create your first stunning course experience.
+          <h2 className="font-display text-2xl font-bold">No courses yet</h2>
+          <p className="mt-3 text-on-surface-variant max-w-sm px-4">
+            Paste a YouTube playlist URL above to create your first learning journey.
           </p>
         </div>
       ) : (
@@ -196,33 +195,33 @@ export default function Dashboard() {
             return (
               <div
                 key={course.id}
-                className={`brutal-card group relative animate-slide-up bg-white ${isComplete ? 'border-[#ff8c00]' : ''}`}
+                className={`learning-card p-0 overflow-hidden flex flex-col group relative animate-slide-up ${isComplete ? 'border-primary' : ''}`}
                 style={{ animationDelay: `${i * 80}ms`, animationFillMode: 'both' }}
               >
                 <Link to={`/courses/${course.id}`} className="block h-full flex flex-col">
                   {course.thumbnail_url ? (
-                    <div className="aspect-video w-full overflow-hidden border-b-[3px] border-black relative">
+                    <div className="aspect-video w-full overflow-hidden border-b border-outline-variant relative bg-surface-container">
                       <img
                         src={course.thumbnail_url}
                         alt={course.title}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       {isComplete && (
-                        <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-[#ff8c00] border-[2px] border-black shadow-[2px_2px_0px_#000] px-2.5 py-1 text-[10px] font-bold text-black uppercase tracking-wider">
-                          <CheckCircle2 className="h-4 w-4 stroke-[3px]" />
-                          COMPLETE
+                        <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-primary text-on-primary rounded-md px-2.5 py-1 text-xs font-semibold">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Complete
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div className="flex aspect-video w-full items-center justify-center border-b-[3px] border-black bg-[#ff99e6] relative overflow-hidden">
-                      <PlayCircle className="h-16 w-16 text-black stroke-[3px] group-hover:scale-110 transition-transform duration-300" />
+                    <div className="flex aspect-video w-full items-center justify-center border-b border-outline-variant bg-surface-container relative overflow-hidden">
+                      <PlayCircle className="h-12 w-12 text-on-surface-variant group-hover:scale-110 transition-transform duration-300" />
                     </div>
                   )}
 
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
-                      <h3 className="line-clamp-2 font-display font-bold text-xl text-black uppercase tracking-tight group-hover:underline decoration-[3px] underline-offset-4">
+                      <h3 className="line-clamp-2 font-display font-semibold text-lg hover:text-primary transition-colors">
                         {course.title}
                       </h3>
 
@@ -232,37 +231,35 @@ export default function Dashboard() {
                           {course.tags.map((tag) => (
                             <span
                               key={tag.id}
-                              className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border-[2px] border-black bg-white shadow-[2px_2px_0px_0px_#000000]"
-                              style={{ color: 'black' }}
+                              className="px-2 py-0.5 text-xs font-medium rounded-sm bg-surface-container text-on-surface-variant"
                             >
-                              <span className="inline-block h-2 w-2 rounded-full border border-black mr-1.5" style={{ backgroundColor: tag.color }} />
                               {tag.name}
                             </span>
                           ))}
                         </div>
                       )}
 
-                      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-bold text-black uppercase">
-                        <span className="flex items-center gap-1.5 border-[2px] border-black bg-[#ff99e6] px-2.5 py-1 shadow-[2px_2px_0px_0px_#000000]">
-                          <PlayCircle className="h-4 w-4 stroke-[3px]" />
+                      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium text-on-surface-variant">
+                        <span className="flex items-center gap-1.5">
+                          <PlayCircle className="h-4 w-4" />
                           {course.video_count} vids
                         </span>
-                        <span className="flex items-center gap-1.5 border-[2px] border-black bg-[#facc15] px-2.5 py-1 shadow-[2px_2px_0px_0px_#000000]">
-                          <CheckCircle2 className="h-4 w-4 stroke-[3px]" />
+                        <span className="flex items-center gap-1.5">
+                          <CheckCircle2 className="h-4 w-4" />
                           {course.watched_count} done
                         </span>
                         {remaining > 0 && (
-                          <span className="flex items-center gap-1.5 bg-white border-[2px] border-black px-2.5 py-1 shadow-[2px_2px_0px_0px_#000000] text-gray-700">
-                            <Clock className="h-4 w-4 stroke-[3px]" />
+                          <span className="flex items-center gap-1.5">
+                            <Clock className="h-4 w-4" />
                             {formatDuration(remaining)} left
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t-[3px] border-black">
-                      <div className="flex items-center justify-between font-display font-bold mb-2 uppercase">
-                        <span className="text-black text-sm">Progress</span>
+                    <div className="mt-6 pt-4 border-t border-outline-variant">
+                      <div className="flex items-center justify-between font-display font-semibold mb-2">
+                        <span className="text-sm">Progress</span>
                         <div className="flex items-center gap-3">
                           {isComplete && (
                             <button
@@ -271,17 +268,17 @@ export default function Dashboard() {
                                 e.preventDefault();
                                 setCertCourse(course);
                               }}
-                              className="flex items-center gap-1.5 px-3 py-1 text-xs font-bold text-black bg-[#ff8c00] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none transition-all"
+                              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-primary text-on-primary rounded-sm hover:-translate-y-0.5 transition-transform"
                             >
-                              <Award className="h-4 w-4 stroke-[3px]" />
-                              CERT
+                              <Award className="h-4 w-4" />
+                              Cert
                             </button>
                           )}
-                          <span className="text-xl">{progress}%</span>
+                          <span className="text-sm">{progress}%</span>
                         </div>
                       </div>
-                      <div className="progress-bar">
-                        <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+                      <div className="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+                        <div className="bg-primary h-full transition-all duration-500" style={{ width: `${progress}%` }} />
                       </div>
                     </div>
                   </div>
@@ -295,14 +292,14 @@ export default function Dashboard() {
                       e.preventDefault();
                       togglePin.mutate(course.id);
                     }}
-                    className={`p-2 border-[2px] border-black brutal-shadow-sm hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all ${
+                    className={`p-1.5 rounded-md transition-colors backdrop-blur-md ${
                       course.is_pinned
-                        ? 'bg-[#ff8c00] text-black'
-                        : 'bg-white text-black hover:bg-[#facc15]'
+                        ? 'bg-primary text-on-primary'
+                        : 'bg-surface/80 text-on-surface hover:bg-surface'
                     }`}
                     title={course.is_pinned ? 'Unpin course' : 'Pin course'}
                   >
-                    <Pin className={`h-5 w-5 stroke-[2.5px] ${course.is_pinned ? 'fill-black' : ''}`} />
+                    <Pin className={`h-4 w-4 ${course.is_pinned ? 'fill-current' : ''}`} />
                   </button>
                   <button
                     onClick={(e) => {
@@ -312,9 +309,9 @@ export default function Dashboard() {
                         deleteCourse.mutate(course.id);
                       }
                     }}
-                    className="p-2 border-[2px] border-black bg-white text-black brutal-shadow-sm hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all hover:bg-red-500 hover:text-white"
+                    className="p-1.5 rounded-md bg-surface/80 text-on-surface hover:bg-red-500 hover:text-white transition-colors backdrop-blur-md"
                   >
-                    <Trash2 className="h-5 w-5 stroke-[2.5px]" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
 
@@ -326,14 +323,14 @@ export default function Dashboard() {
                       e.preventDefault();
                       setTagModalCourseId(tagModalCourseId === course.id ? null : course.id);
                     }}
-                    className="p-2 border-[2px] border-black bg-white text-black brutal-shadow-sm opacity-0 transition-all hover:bg-[#ff99e6] group-hover:opacity-100 hover:-translate-y-0.5 hover:-translate-x-0.5"
+                    className="p-1.5 rounded-md bg-surface/80 text-on-surface opacity-0 transition-opacity hover:bg-surface group-hover:opacity-100 backdrop-blur-md"
                   >
-                    <Tag className="h-5 w-5 stroke-[2.5px]" />
+                    <Tag className="h-4 w-4" />
                   </button>
 
                   {/* Tag dropdown */}
                   {tagModalCourseId === course.id && (
-                    <div className="absolute left-0 top-12 w-48 brutal-card bg-white p-2 animate-fade-in pointer-events-auto origin-top-left z-30 flex flex-col gap-1">
+                    <div className="absolute left-0 top-10 w-48 bg-surface border border-outline-variant rounded-md shadow-lg p-2 animate-fade-in pointer-events-auto origin-top-left z-30 flex flex-col gap-1">
                       {tags.map((tag) => {
                         const isTagged = course.tags?.some(t => t.id === tag.id);
                         return (
@@ -348,16 +345,15 @@ export default function Dashboard() {
                                 tagCourse.mutate({ tagId: tag.id, courseId: course.id });
                               }
                             }}
-                            className="flex w-full items-center gap-3 border-[2px] border-transparent hover:border-black px-3 py-2 text-xs font-bold uppercase tracking-wide text-black bg-gray-50 hover:bg-[#facc15] transition-all"
+                            className="flex w-full items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-sm hover:bg-surface-container transition-colors"
                           >
-                            <span className="h-3 w-3 rounded-full border border-black" style={{ backgroundColor: tag.color }} />
                             <span className="flex-1 text-left">{tag.name}</span>
-                            {isTagged && <CheckCircle2 className="h-4 w-4 text-black stroke-[3px]" />}
+                            {isTagged && <CheckCircle2 className="h-4 w-4 text-primary" />}
                           </button>
                         );
                       })}
                       {tags.length === 0 && (
-                        <p className="px-3 py-2 text-xs font-bold uppercase text-gray-500">NO TAGS YET.</p>
+                        <p className="px-3 py-2 text-xs font-medium text-on-surface-variant">No tags yet.</p>
                       )}
                     </div>
                   )}

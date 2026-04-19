@@ -26,40 +26,42 @@ export default function VideoChat({ videoId }) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 border-[3px] border-black bg-[#facc15] px-5 py-3 text-sm font-black uppercase tracking-widest text-black brutal-shadow transition-transform hover:-translate-y-1 hover:-translate-x-1 lg:bottom-8 lg:right-8"
+        className="fixed bottom-6 right-6 z-40 flex items-center justify-center gap-2 border border-outline-variant bg-surface text-on-surface px-4 py-3 rounded-full shadow-lg transition-transform hover:-translate-y-1 lg:bottom-8 lg:right-8"
       >
-        <MessageCircle className="h-5 w-5 stroke-[2.5px]" />
-        <span className="hidden sm:inline">Ask AI</span>
+        <MessageCircle className="h-5 w-5" />
+        <span className="hidden md:inline text-sm font-semibold tracking-wide">Ask AI Tutor</span>
       </button>
     );
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex h-[450px] sm:h-[500px] w-[calc(100vw-48px)] sm:w-[400px] flex-col overflow-hidden border-[3px] border-black bg-white brutal-shadow lg:bottom-8 lg:right-8">
+    <div className="fixed bottom-6 right-6 z-50 flex h-[500px] w-[calc(100vw-32px)] sm:w-[400px] flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface shadow-2xl lg:bottom-8 lg:right-8 animate-slide-up">
       {/* Header */}
-      <div className="flex items-center justify-between border-b-[3px] border-black bg-[#ff99e6] px-4 py-3 brutal-shadow-sm z-10">
-        <div className="flex items-center gap-2">
-          <Bot className="h-6 w-6 stroke-[2px] text-black" />
-          <span className="text-base font-black uppercase tracking-widest text-black">AI Tutor</span>
+      <div className="flex items-center justify-between border-b border-outline-variant bg-surface-container px-4 py-3 z-10">
+        <div className="flex items-center gap-2 text-primary">
+          <Bot className="h-5 w-5" />
+          <span className="text-sm font-semibold tracking-wide text-on-surface">AI Tutor</span>
         </div>
         <button
           onClick={() => setIsOpen(false)}
-          className="rounded-none border-[2px] border-black bg-white p-1 text-black brutal-shadow-sm transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5"
+          className="rounded-md p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface transition-colors"
         >
-          <X className="h-5 w-5 stroke-[3px]" />
+          <X className="h-4 w-4" />
         </button>
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto p-4 custom-scrollbar bg-gray-50">
+      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto p-4 custom-scrollbar bg-surface text-sm">
         {messages.length === 0 && !isLoading && (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <Bot className="mb-4 h-12 w-12 text-black stroke-[1.5px] opacity-20" />
-            <p className="text-sm font-black uppercase tracking-widest text-black mb-2">
-              Ask me anything about this video!
+          <div className="flex flex-col items-center justify-center py-10 text-center h-full">
+            <div className="h-12 w-12 rounded-full bg-surface-container flex items-center justify-center mb-4 text-on-surface-variant">
+              <Bot className="h-6 w-6" />
+            </div>
+            <p className="text-sm font-semibold text-on-surface mb-2">
+              Ask me anything about this video
             </p>
-            <p className="text-xs font-bold text-gray-500 max-w-[200px] mx-auto leading-relaxed">
-              I can explain concepts, answer questions, and help you understand the content.
+            <p className="text-xs font-medium text-on-surface-variant max-w-[200px] mx-auto leading-relaxed">
+              I can explain concepts, answer questions, and help you understand the content better.
             </p>
           </div>
         )}
@@ -71,61 +73,54 @@ export default function VideoChat({ videoId }) {
           >
             {msg.role === 'assistant' && (
               <div className="mt-1 shrink-0">
-                <div className="flex h-8 w-8 items-center justify-center border-[2px] border-black bg-white brutal-shadow-sm">
-                  <Bot className="h-5 w-5 text-black stroke-[2px]" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container border border-outline-variant text-on-surface">
+                  <Bot className="h-4 w-4" />
                 </div>
               </div>
             )}
             <div
-              className={`max-w-[85%] rounded-none border-[3px] border-black px-4 py-3 text-sm font-medium brutal-shadow-sm ${
+              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm font-medium leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-[#ff8c00] text-black'
-                  : 'bg-white text-black'
+                  ? 'bg-primary text-on-primary rounded-tr-sm'
+                  : 'bg-surface-container text-on-surface border border-outline-variant rounded-tl-sm'
               }`}
             >
-              <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+              <p className="whitespace-pre-wrap">{msg.content}</p>
             </div>
-            {msg.role === 'user' && (
-              <div className="mt-1 shrink-0">
-                <div className="flex h-8 w-8 items-center justify-center border-[2px] border-black bg-white brutal-shadow-sm">
-                  <User className="h-5 w-5 text-black stroke-[2.5px]" />
-                </div>
-              </div>
-            )}
           </div>
         ))}
 
         {sendMessage.isPending && (
-          <div className="flex gap-3">
+          <div className="flex gap-3 justify-start">
             <div className="mt-1 shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center border-[2px] border-black bg-white brutal-shadow-sm">
-                <Bot className="h-5 w-5 text-black stroke-[2px]" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container border border-outline-variant text-on-surface">
+                <Bot className="h-4 w-4" />
               </div>
             </div>
-            <div className="rounded-none border-[3px] border-black bg-white px-4 py-3 brutal-shadow-sm">
-              <Loader2 className="h-5 w-5 animate-spin text-black stroke-[3px]" />
+            <div className="rounded-2xl rounded-tl-sm border border-outline-variant bg-surface-container px-4 py-2.5 flex items-center justify-center">
+              <Loader2 className="h-4 w-4 animate-spin text-on-surface-variant" />
             </div>
           </div>
         )}
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSend} className="border-t-[3px] border-black bg-white p-3 z-10">
+      <form onSubmit={handleSend} className="border-t border-outline-variant bg-surface p-3 z-10">
         <div className="flex gap-2">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Ask a question..."
-            className="flex-1 rounded-none border-[3px] border-black bg-white px-3 py-2 text-sm font-bold text-black outline-none placeholder-gray-500 brutal-shadow-sm transition-all focus:translate-x-1 focus:translate-y-1 focus:shadow-none"
+            className="flex-1 rounded-full border border-outline-variant bg-surface-container px-4 py-2.5 text-sm font-medium text-on-surface outline-none placeholder-on-surface-variant transition-all focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
             disabled={sendMessage.isPending}
           />
           <button
             type="submit"
             disabled={!message.trim() || sendMessage.isPending}
-            className="rounded-none border-[3px] border-black bg-black px-4 py-2 text-white transition-colors hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center"
+            className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-primary text-on-primary transition-colors hover:bg-primary/90 disabled:opacity-50 shadow-sm"
           >
-            <Send className="h-5 w-5 stroke-[2.5px]" />
+            <Send className="h-4 w-4" />
           </button>
         </div>
       </form>

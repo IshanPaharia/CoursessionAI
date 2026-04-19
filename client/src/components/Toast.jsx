@@ -9,20 +9,15 @@ const ICONS = {
   info: Info,
 };
 
-const COLORS = {
-  success: 'border-emerald-500/20 text-emerald-400',
-  error: 'border-red-500/20 text-red-400',
-  info: 'border-amber-500/20 text-amber-400',
-};
-
-const BG = {
-  success: 'rgba(16, 185, 129, 0.1)',
-  error: 'rgba(239, 68, 68, 0.1)',
-  info: 'rgba(251, 146, 60, 0.1)',
+const ICON_COLORS = {
+  success: 'text-green-500',
+  error: 'text-red-500',
+  info: 'text-primary',
 };
 
 function ToastItem({ toast, onRemove }) {
   const Icon = ICONS[toast.type] || Info;
+  const iconColor = ICON_COLORS[toast.type] || 'text-primary';
 
   useEffect(() => {
     const timer = setTimeout(() => onRemove(toast.id), toast.duration || 4000);
@@ -31,12 +26,11 @@ function ToastItem({ toast, onRemove }) {
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-xl slide-in-from-right ${COLORS[toast.type]}`}
-      style={{ backgroundColor: BG[toast.type] }}
+      className={`flex items-center gap-3 rounded-md border border-outline-variant bg-surface px-4 py-3 shadow-sm slide-in-from-right`}
     >
-      <Icon className="h-4 w-4 shrink-0" />
-      <p className="flex-1 text-sm">{toast.message}</p>
-      <button onClick={() => onRemove(toast.id)} className="shrink-0 opacity-60 hover:opacity-100">
+      <Icon className={`h-4 w-4 shrink-0 ${iconColor}`} />
+      <p className="flex-1 text-sm font-medium text-on-surface">{toast.message}</p>
+      <button onClick={() => onRemove(toast.id)} className="shrink-0 text-on-surface-variant hover:text-on-surface transition-colors p-1">
         <X className="h-3.5 w-3.5" />
       </button>
     </div>

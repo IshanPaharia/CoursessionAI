@@ -46,16 +46,16 @@ function SortableVideoItem({ video }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-3 border-[3px] border-black px-4 py-3 bg-white transition-transform ${isDragging ? 'shadow-none translate-x-1 translate-y-1' : 'brutal-shadow-sm hover:-translate-y-0.5'}`}
+      className={`flex items-center gap-3 border border-outline-variant px-4 py-3 bg-surface rounded-md transition-transform ${isDragging ? 'shadow-lg scale-[1.02]' : 'shadow-sm hover:-translate-y-0.5'}`}
     >
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab text-black transition-colors active:cursor-grabbing hover:bg-gray-100 p-1 border-[2px] border-transparent hover:border-black"
+        className="cursor-grab text-on-surface-variant transition-colors active:cursor-grabbing hover:bg-surface-container rounded-sm p-1"
       >
-        <GripVertical className="h-5 w-5 stroke-[2.5px]" />
+        <GripVertical className="h-5 w-5" />
       </button>
-      <span className="flex-1 text-sm font-bold uppercase tracking-wider text-black truncate">{video.title}</span>
+      <span className="flex-1 text-sm font-semibold tracking-wide text-on-surface truncate">{video.title}</span>
     </div>
   );
 }
@@ -162,104 +162,106 @@ export default function CourseSettings() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-white">
-        <Loader2 className="h-10 w-10 animate-spin text-black stroke-[3px]" />
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-background">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!course) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-4 bg-white text-black font-bold uppercase">
-        <p className="text-xl">Course not found.</p>
-        <Link to="/dashboard" className="text-sm border-[2px] border-black bg-[#ff8c00] px-4 py-2 brutal-shadow-sm hover:-translate-y-0.5 transition-transform">Back to dashboard</Link>
+      <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-4 bg-background text-on-surface">
+        <p className="text-xl font-semibold">Course not found.</p>
+        <Link to="/dashboard" className="text-sm btn-primary px-4 py-2">Back to dashboard</Link>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12 sm:px-6 pb-20 sm:pb-12 animate-fade-in text-black">
-      <Link to={`/courses/${id}`} className="mb-6 sm:mb-8 inline-flex items-center gap-2 text-sm font-bold tracking-widest uppercase text-black bg-white border-[2px] border-black px-4 py-2 brutal-shadow-sm hover:-translate-y-0.5 hover:-translate-x-0.5 transition-transform">
-        <ArrowLeft className="h-4 w-4 stroke-[3px]" />
-        BACK TO COURSE
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12 sm:px-6 pb-20 sm:pb-12 animate-fade-in text-on-surface">
+      <Link to={`/courses/${id}`} className="mb-6 sm:mb-8 inline-flex items-center gap-2 text-sm font-semibold tracking-wide text-on-surface hover:text-primary transition-colors">
+        <ArrowLeft className="h-4 w-4" />
+        Back to Course
       </Link>
 
-      <h1 className="text-4xl sm:text-5xl font-display font-extrabold text-black mb-8 sm:mb-10 tracking-tight uppercase">
+      <h1 className="text-4xl sm:text-5xl font-display font-bold mb-8 sm:mb-10 tracking-tight">
         Course Settings
       </h1>
 
       {/* Title & Description */}
-      <div className="brutal-card bg-white p-6 sm:p-8 mb-6 sm:mb-8">
-        <h2 className="text-base font-black text-black mb-6 uppercase tracking-widest border-b-[3px] border-black pb-2">Details</h2>
+      <div className="learning-card p-6 sm:p-8 mb-6 sm:mb-8 bg-surface">
+        <h2 className="text-base font-semibold text-on-surface tracking-wide mb-6 border-b border-outline-variant pb-2">Details</h2>
         <div className="space-y-6">
           <div>
-            <label className="mb-2 block text-sm font-bold text-black uppercase tracking-wider">Title</label>
+            <label className="mb-2 block text-sm font-semibold text-on-surface-variant tracking-wide">Title</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-none border-[3px] border-black px-4 py-3 text-base font-bold text-black bg-gray-50 outline-none brutal-shadow-sm focus:translate-x-1 focus:translate-y-1 focus:shadow-none transition-all placeholder-gray-500"
+              className="w-full rounded-md border border-outline-variant px-4 py-3 text-base font-medium text-on-surface bg-surface outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
+              placeholder="Course Title"
             />
           </div>
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <label className="text-sm font-bold text-black uppercase tracking-wider">Description</label>
+              <label className="text-sm font-semibold text-on-surface-variant tracking-wide">Description</label>
               <button
                 onClick={handleGenerateDescription}
                 disabled={generatingDesc}
-                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-black bg-[#ff99e6] border-[2px] border-black px-3 py-1.5 brutal-shadow-sm hover:-translate-y-0.5 hover:-translate-x-0.5 transition-transform disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+                className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-md transition-colors disabled:opacity-50"
               >
-                {generatingDesc ? <Loader2 className="h-4 w-4 animate-spin stroke-[3px]" /> : <Sparkles className="h-4 w-4 stroke-[2.5px]" />}
-                AI GENERATE
+                {generatingDesc ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                Generate with AI
               </button>
             </div>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={5}
-              className="w-full resize-none rounded-none border-[3px] border-black px-4 py-3 text-base font-medium text-black bg-gray-50 outline-none brutal-shadow-sm focus:translate-x-1 focus:translate-y-1 focus:shadow-none transition-all placeholder-gray-500"
+              className="w-full resize-none rounded-md border border-outline-variant px-4 py-3 text-base font-medium text-on-surface bg-surface outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
+              placeholder="Course Description"
             />
           </div>
           <button
             onClick={handleSave}
             disabled={updateCourse.isPending}
-            className="btn-primary px-8 py-3 w-full sm:w-auto justify-center text-lg mt-2"
+            className="btn-primary px-8 py-3 w-full sm:w-auto justify-center text-sm font-semibold mt-2"
           >
-            {updateCourse.isPending ? <Loader2 className="h-5 w-5 animate-spin stroke-[3px]" /> : <Save className="h-5 w-5 stroke-[2.5px]" />}
-            SAVE CHANGES
+            {updateCourse.isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+            Save Changes
           </button>
         </div>
       </div>
 
       {/* AI Chapters */}
-      <div className="brutal-card bg-[#facc15] p-6 sm:p-8 mb-6 sm:mb-8">
+      <div className="learning-card p-6 sm:p-8 mb-6 sm:mb-8 bg-surface">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <h2 className="text-base font-black uppercase tracking-widest text-black border-b-[3px] border-black pb-2 sm:border-none sm:pb-0">AI Chapters</h2>
+          <h2 className="text-base font-semibold tracking-wide text-on-surface border-b border-outline-variant pb-2 sm:border-none sm:pb-0">AI Chapters</h2>
           <button
             onClick={handleGenerateChapters}
             disabled={generatingChapters}
-            className="flex items-center justify-center gap-2 border-[3px] border-black bg-white px-4 py-2 text-sm font-bold uppercase tracking-widest text-black transition-transform hover:-translate-y-1 hover:-translate-x-1 brutal-shadow disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+            className="flex items-center justify-center gap-2 border border-outline-variant bg-surface px-4 py-2 text-sm font-semibold tracking-wide text-on-surface rounded-md shadow-sm transition-colors hover:bg-surface-container disabled:opacity-50"
           >
-            {generatingChapters ? <Loader2 className="h-5 w-5 animate-spin stroke-[3px]" /> : <Sparkles className="h-5 w-5 stroke-[2.5px]" />}
-            GENERATE CHAPTERS
+            {generatingChapters ? <Loader2 className="h-5 w-5 animate-spin text-primary" /> : <Sparkles className="h-5 w-5 text-primary" />}
+            Generate Chapters
           </button>
         </div>
 
         {chapterSuggestions && (
-          <div className="space-y-4 mb-6 bg-white border-[3px] border-black p-5 brutal-shadow-sm">
-            <p className="text-sm font-bold uppercase text-black mb-2">Suggested grouping:</p>
+          <div className="space-y-4 mb-6 bg-surface-container border border-outline-variant rounded-md p-5 shadow-sm">
+            <p className="text-sm font-semibold text-on-surface mb-2">Suggested Grouping:</p>
             <div className="space-y-3">
               {chapterSuggestions.map((ch, i) => (
-                <div key={i} className="border-[2px] border-black p-3 bg-gray-50">
-                  <h4 className="text-base font-black uppercase text-black">{ch.title}</h4>
-                  <p className="mt-1 text-sm font-bold text-gray-700">{ch.videoIds?.length || 0} videos</p>
+                <div key={i} className="border border-outline-variant rounded-md p-3 bg-surface shadow-sm">
+                  <h4 className="text-sm font-semibold text-on-surface">{ch.title}</h4>
+                  <p className="mt-1 text-xs font-medium text-on-surface-variant">{ch.videoIds?.length || 0} videos</p>
                 </div>
               ))}
             </div>
             <button
               onClick={handleApplyChapters}
-              className="btn-primary w-full py-3 mt-4 text-base bg-[#ff8c00] hover:bg-[#ff8c00] hover:-translate-y-0.5 brutal-shadow-sm"
+              className="btn-primary w-full py-3 mt-4 text-sm font-semibold justify-center"
             >
-              APPLY CHAPTERS
+              Apply Chapters
             </button>
           </div>
         )}
@@ -267,26 +269,26 @@ export default function CourseSettings() {
         {/* Current Modules */}
         {modules.length > 0 && (
           <div className="space-y-3 mt-6">
-            <p className="text-sm font-bold uppercase tracking-widest text-black mb-3">Current Chapters:</p>
+            <p className="text-sm font-semibold tracking-wide text-on-surface mb-3">Current Chapters:</p>
             {modules.map((mod) => (
-              <div key={mod.id} className="border-[3px] border-black bg-white overflow-hidden brutal-shadow-sm transition-all">
+              <div key={mod.id} className="border border-outline-variant bg-surface rounded-md overflow-hidden shadow-sm transition-all">
                 <button
                   onClick={() => toggleModule(mod.id)}
-                  className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+                  className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-surface-container transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <FolderOpen className="h-5 w-5 stroke-[2.5px] text-black" />
-                    <span className="text-sm sm:text-base font-black uppercase tracking-wider text-black">{mod.title}</span>
+                    <FolderOpen className="h-5 w-5 text-on-surface-variant" />
+                    <span className="text-sm sm:text-base font-semibold tracking-wide text-on-surface">{mod.title}</span>
                   </div>
-                  <span className="text-black bg-[#ff99e6] border-[2px] border-black p-1 brutal-shadow-sm">
-                    {expandedModules[mod.id] ? <ChevronUp className="h-4 w-4 stroke-[3px]" /> : <ChevronDown className="h-4 w-4 stroke-[3px]" />}
+                  <span className="text-on-surface-variant p-1 rounded-sm">
+                    {expandedModules[mod.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                   </span>
                 </button>
                 {expandedModules[mod.id] && (
-                  <div className="border-t-[3px] border-black px-5 py-3 space-y-2 bg-gray-50">
+                  <div className="border-t border-outline-variant px-5 py-3 space-y-2 bg-surface-container">
                     {videos.filter(v => v.module_id === mod.id).map(v => (
-                      <p key={v.id} className="text-sm font-bold text-gray-800 py-1.5 border-b-[2px] border-gray-300 last:border-0 truncate flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-none bg-black inline-block"></span>
+                      <p key={v.id} className="text-sm font-medium text-on-surface py-2 border-b border-outline-variant last:border-0 truncate flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
                         {v.title}
                       </p>
                     ))}
@@ -299,11 +301,11 @@ export default function CourseSettings() {
       </div>
 
       {/* Video Order */}
-      <div className="brutal-card bg-white p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b-[3px] border-black pb-4">
+      <div className="learning-card p-6 sm:p-8 bg-surface">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-outline-variant pb-4">
           <div>
-            <h2 className="text-base font-black uppercase tracking-widest text-black">Video Order</h2>
-            <p className="text-sm font-bold text-gray-700 mt-2">Drag to reorder videos manually.</p>
+            <h2 className="text-base font-semibold tracking-wide text-on-surface">Video Order</h2>
+            <p className="text-sm font-medium text-on-surface-variant mt-2">Drag to reorder videos manually.</p>
           </div>
         </div>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

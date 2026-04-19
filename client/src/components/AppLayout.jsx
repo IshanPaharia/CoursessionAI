@@ -1,44 +1,45 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { UserButton, useAuth } from '@clerk/react';
-import { BookOpen, LayoutDashboard, User, Home, Menu, X } from 'lucide-react';
+import { BookOpen, LayoutDashboard, User, Home, Menu, X, Sun, Moon } from 'lucide-react';
 import StreakBadge from './StreakBadge';
+import { useTheme } from './ThemeProvider';
 
 export default function AppLayout() {
   const { isSignedIn } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const isActive = (path) => location.pathname.startsWith(path);
   const isHome = location.pathname === '/';
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#facc15] text-black font-sans">
+    <div className="flex min-h-screen flex-col bg-background text-on-surface font-sans transition-colors duration-300">
       {/* Top Navigation */}
-      <nav className="sticky top-0 z-50 bg-white border-b-[3px] border-black transition-all duration-300">
+      <nav className="sticky top-0 z-50 bg-surface/90 backdrop-blur-md border-b border-outline-variant transition-all duration-300">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
           {/* Logo */}
-          <Link to="/" className="group flex items-center gap-2.5 transition-transform hover:-translate-y-1 duration-200">
-            <div className="flex h-9 w-9 items-center justify-center rounded-none bg-[#facc15] border-[2px] border-black brutal-shadow-sm group-hover:bg-[#ff99e6] transition-colors">
-              <BookOpen className="h-5 w-5 text-black" />
+          <Link to="/" className="group flex items-center gap-3 transition-transform hover:-translate-y-0.5 duration-200">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm group-hover:shadow-md transition-all">
+              <BookOpen className="h-5 w-5 text-on-primary" />
             </div>
-            <span className="text-xl font-display font-bold tracking-tight uppercase">
-              Coursession
-              <span className="text-[#ff8c00] font-black group-hover:text-[#ff99e6] transition-colors ml-1">AI</span>
+            <span className="text-xl font-display font-bold tracking-tight">
+              Coursession<span className="text-primary group-hover:text-primary-dim transition-colors ml-0.5">AI</span>
             </span>
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-4">
             {isSignedIn && (
               <>
                 <StreakBadge />
                 <Link
                   to="/dashboard"
-                  className={`flex items-center gap-2 px-3.5 py-2 text-sm font-bold uppercase tracking-wide transition-all duration-200 border-[2px] border-black ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-xl border border-transparent ${
                     isActive('/dashboard')
-                      ? 'bg-[#ff99e6] brutal-shadow-sm -translate-y-[2px] -translate-x-[2px]'
-                      : 'bg-white hover:bg-black/5 hover:-translate-y-[1px] hover:-translate-x-[1px] hover:shadow-[2px_2px_0px_#000]'
+                      ? 'bg-primary/10 text-primary border-primary/20'
+                      : 'text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
                   }`}
                 >
                   <LayoutDashboard className="h-4 w-4" />
@@ -46,10 +47,10 @@ export default function AppLayout() {
                 </Link>
                 <Link
                   to="/profile"
-                  className={`flex items-center gap-2 px-3.5 py-2 text-sm font-bold uppercase tracking-wide transition-all duration-200 border-[2px] border-black ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-xl border border-transparent ${
                     isActive('/profile')
-                      ? 'bg-[#ff99e6] brutal-shadow-sm -translate-y-[2px] -translate-x-[2px]'
-                      : 'bg-white hover:bg-black/5 hover:-translate-y-[1px] hover:-translate-x-[1px] hover:shadow-[2px_2px_0px_#000]'
+                      ? 'bg-primary/10 text-primary border-primary/20'
+                      : 'text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
                   }`}
                 >
                   <User className="h-4 w-4" />
@@ -57,12 +58,26 @@ export default function AppLayout() {
                 </Link>
               </>
             )}
+            
+            {/* Theme Toggle Button */}
+            <button
+              onClick={(e) => toggleTheme(e)}
+              className="p-2 ml-1 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all duration-300 transform active:scale-95"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5 hover:rotate-90 transition-transform duration-300" />
+              ) : (
+                <Moon className="h-5 w-5 hover:-rotate-12 transition-transform duration-300" />
+              )}
+            </button>
+
             {isSignedIn ? (
-              <div className="ml-2 pl-3 border-l-[3px] border-black flex items-center">
+              <div className="ml-2 pl-4 border-l border-outline-variant/30 flex items-center">
                 <UserButton
                   appearance={{
                     elements: {
-                      avatarBox: 'h-9 w-9 border-[2px] border-black hover:scale-110 transition-transform brutal-shadow-sm rounded-none',
+                      avatarBox: 'h-9 w-9 border-2 border-outline/20 hover:border-primary transition-colors shadow-sm rounded-xl',
                     },
                   }}
                 />
@@ -70,7 +85,7 @@ export default function AppLayout() {
             ) : (
               <Link
                 to="/sign-in"
-                className="btn-primary px-5 py-2.5"
+                className="btn-primary px-5 py-2.5 text-sm ml-2"
               >
                 Sign In
               </Link>
@@ -80,12 +95,20 @@ export default function AppLayout() {
           {/* Mobile menu button */}
           <div className="flex sm:hidden items-center gap-2">
             {isSignedIn && <StreakBadge />}
+            
+            <button
+              onClick={(e) => toggleTheme(e)}
+              className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-md transition-all duration-300"
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+
             {isSignedIn ? (
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-black hover:bg-[#ff99e6] border-[2px] border-black brutal-shadow-sm transition-all"
+                className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
               >
-                {mobileMenuOpen ? <X className="h-5 w-5 stroke-[3px]" /> : <Menu className="h-5 w-5 stroke-[3px]" />}
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             ) : (
               <Link to="/sign-in" className="btn-primary px-4 py-2 text-xs">
@@ -97,14 +120,14 @@ export default function AppLayout() {
 
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && isSignedIn && (
-          <div className="sm:hidden border-t-[3px] border-black bg-white px-4 py-3 space-y-2 animate-fade-in">
+          <div className="sm:hidden border-t border-outline-variant/30 bg-surface-container-high px-4 py-4 space-y-2 shadow-xl animate-slide-up">
             <Link
               to="/dashboard"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase border-[2px] border-black transition-all ${
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all ${
                 isActive('/dashboard')
-                  ? 'bg-[#ff99e6] brutal-shadow-sm'
-                  : 'bg-white hover:bg-black/5'
+                  ? 'bg-primary/10 text-primary border border-primary/20'
+                  : 'text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
               }`}
             >
               <LayoutDashboard className="h-5 w-5" />
@@ -113,22 +136,24 @@ export default function AppLayout() {
             <Link
               to="/profile"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase border-[2px] border-black transition-all ${
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all ${
                 isActive('/profile')
-                  ? 'bg-[#ff99e6] brutal-shadow-sm'
-                  : 'bg-white hover:bg-black/5'
+                  ? 'bg-primary/10 text-primary border border-primary/20'
+                  : 'text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
               }`}
             >
               <User className="h-5 w-5" />
               Profile
             </Link>
-            <div className="pt-2 px-4 flex items-center gap-3 border-t-[2px] border-black mt-2">
-              <UserButton
-                appearance={{
-                  elements: { avatarBox: 'h-10 w-10 border-[2px] border-black rounded-none brutal-shadow-sm' },
-                }}
-              />
-              <span className="text-sm font-bold uppercase">Account</span>
+            <div className="pt-4 mt-2 border-t border-outline-variant/30 px-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <UserButton
+                  appearance={{
+                    elements: { avatarBox: 'h-10 w-10 border border-outline/30 rounded-xl' },
+                  }}
+                />
+                <span className="text-sm font-semibold text-on-surface">Account</span>
+              </div>
             </div>
           </div>
         )}
@@ -141,34 +166,34 @@ export default function AppLayout() {
 
       {/* Mobile bottom navigation bar */}
       {isSignedIn && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 sm:hidden border-t-[3px] border-black bg-white">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 sm:hidden bg-surface/90 backdrop-blur-md border-t border-outline-variant pb-safe">
           <div className="flex items-center justify-around py-2 px-2">
             <Link
               to="/"
-              className={`flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all ${
-                isHome ? 'text-[#ff8c00]' : 'text-black hover:text-[#ff8c00]'
+              className={`flex flex-col items-center gap-1 px-4 py-1.5 transition-all ${
+                isHome ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'
               }`}
             >
-              <Home className={`h-6 w-6 stroke-[3px] ${isHome && 'fill-[#ff8c00]/20'}`} />
-              <span className="text-[10px] font-bold uppercase tracking-wider mt-1">Home</span>
+              <Home className={`h-5 w-5 ${isHome && 'fill-primary/20'}`} />
+              <span className="text-[10px] font-semibold tracking-wide mt-0.5">Home</span>
             </Link>
             <Link
               to="/dashboard"
-              className={`flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all ${
-                isActive('/dashboard') || isActive('/courses') ? 'text-[#ff8c00]' : 'text-black hover:text-[#ff8c00]'
+              className={`flex flex-col items-center gap-1 px-4 py-1.5 transition-all ${
+                isActive('/dashboard') || isActive('/courses') ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'
               }`}
             >
-              <LayoutDashboard className={`h-6 w-6 stroke-[3px] ${(isActive('/dashboard') || isActive('/courses')) && 'fill-[#ff8c00]/20'}`} />
-              <span className="text-[10px] font-bold uppercase tracking-wider mt-1">Courses</span>
+              <LayoutDashboard className={`h-5 w-5 ${(isActive('/dashboard') || isActive('/courses')) && 'fill-primary/20'}`} />
+              <span className="text-[10px] font-semibold tracking-wide mt-0.5">Courses</span>
             </Link>
             <Link
               to="/profile"
-              className={`flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all ${
-                isActive('/profile') ? 'text-[#ff8c00]' : 'text-black hover:text-[#ff8c00]'
+              className={`flex flex-col items-center gap-1 px-4 py-1.5 transition-all ${
+                isActive('/profile') ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'
               }`}
             >
-              <User className={`h-6 w-6 stroke-[3px] ${isActive('/profile') && 'fill-[#ff8c00]/20'}`} />
-              <span className="text-[10px] font-bold uppercase tracking-wider mt-1">Profile</span>
+              <User className={`h-5 w-5 ${isActive('/profile') && 'fill-primary/20'}`} />
+              <span className="text-[10px] font-semibold tracking-wide mt-0.5">Profile</span>
             </Link>
           </div>
         </nav>
