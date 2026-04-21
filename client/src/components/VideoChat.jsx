@@ -26,7 +26,7 @@ export default function VideoChat({ videoId }) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-4 z-40 flex items-center justify-center gap-2 border border-outline-variant bg-surface text-on-surface px-4 py-3 rounded-full shadow-lg transition-transform hover:-translate-y-1 sm:bottom-6 sm:right-6 lg:bottom-8 lg:right-8"
+        className="fixed bottom-24 left-4 z-40 flex items-center justify-center gap-2 border border-outline-variant bg-surface text-on-surface px-4 py-3 rounded-full shadow-lg transition-transform hover:-translate-y-1 sm:bottom-6 sm:left-6 lg:bottom-8 lg:left-8"
       >
         <MessageCircle className="h-5 w-5" />
         <span className="hidden md:inline text-sm font-semibold tracking-wide">Ask AI Tutor</span>
@@ -35,7 +35,7 @@ export default function VideoChat({ videoId }) {
   }
 
   return (
-    <div className="fixed bottom-24 right-4 z-50 flex h-[500px] w-[calc(100vw-32px)] sm:bottom-6 sm:right-6 sm:w-[400px] lg:bottom-8 lg:right-8 flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface shadow-2xl animate-slide-up">
+    <div className="fixed bottom-24 left-4 z-50 flex h-[500px] w-[calc(100vw-32px)] sm:bottom-6 sm:left-6 sm:w-[400px] lg:bottom-8 lg:left-8 flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface shadow-2xl animate-slide-up">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-outline-variant bg-surface-container px-4 py-3 z-10">
         <div className="flex items-center gap-2 text-primary">
@@ -97,8 +97,9 @@ export default function VideoChat({ videoId }) {
                 <Bot className="h-4 w-4" />
               </div>
             </div>
-            <div className="rounded-2xl rounded-tl-sm border border-outline-variant bg-surface-container px-4 py-2.5 flex items-center justify-center">
-              <Loader2 className="h-4 w-4 animate-spin text-on-surface-variant" />
+            <div className="rounded-2xl rounded-tl-sm border border-outline-variant bg-surface-container px-4 py-2.5 flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              <span className="text-xs font-semibold text-on-surface-variant">Thinking...</span>
             </div>
           </div>
         )}

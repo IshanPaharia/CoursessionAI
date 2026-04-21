@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -29,6 +29,7 @@ import { CSS } from '@dnd-kit/utilities';
 import api from '../lib/api.js';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../components/Toast';
+import HelpTooltip from '../components/HelpTooltip';
 
 function SortableVideoItem({ video }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -69,6 +70,8 @@ export default function CourseSettings() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [aiGenerateVideoOrder, setAiGenerateVideoOrder] = useState(false);
+  const [aiGenerateChapters, setAiGenerateChapters] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [chapterSuggestions, setChapterSuggestions] = useState(null);
   const [generatingChapters, setGeneratingChapters] = useState(false);
@@ -77,20 +80,30 @@ export default function CourseSettings() {
   const [expandedModules, setExpandedModules] = useState({});
 
   const course = data?.course;
-  const modules = data?.modules || [];
-  const videos = data?.videos || [];
+  const modules = useMemo(() => data?.modules || [], [data?.modules]);
+  const videos = useMemo(() => data?.videos || [], [data?.videos]);
 
-  if (course && !initialized) {
-    setTitle(course.title || '');
-    setDescription(course.description || '');
-    setLocalVideos([...videos]);
-    setInitialized(true);
-  }
+  useEffect(() => {
+    setInitialized(false);
+    setChapterSuggestions(null);
+    setExpandedModules({});
+  }, [id]);
+
+  useEffect(() => {
+    if (course && String(course.id) === String(id) && !initialized) {
+      setTitle(course.title || '');
+      setDescription(course.description || '');
+      setAiGenerateVideoOrder(Boolean(course.ai_generate_video_order));
+      setAiGenerateChapters(Boolean(course.ai_generate_chapters));
+      setLocalVideos([...videos]);
+      setInitialized(true);
+    }
+  }, [course, id, initialized, videos]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const handleSave = () => {
-    updateCourse.mutate({ id, title, description }, {
+    updateCourse.mutate({ id, title, description, aiGenerateVideoOrder, aiGenerateChapters }, {
       onSuccess: () => addToast('Course updated!', 'success'),
     });
   };
@@ -209,8 +222,17 @@ export default function CourseSettings() {
                 disabled={generatingDesc}
                 className="flex w-full items-center justify-center gap-1.5 text-xs font-semibold tracking-wide text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-md transition-colors disabled:opacity-50 sm:w-auto"
               >
-                {generatingDesc ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                Generate with AI
+                {generatingDesc ? (
+                  <span className="flex items-center gap-1.5 animate-pulse">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Analyzing course content...
+                  </span>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    Generate with AI
+                  </>
+                )}
               </button>
             </div>
             <textarea
@@ -220,6 +242,49 @@ export default function CourseSettings() {
               className="w-full resize-none rounded-md border border-outline-variant px-4 py-3 text-base font-medium text-on-surface bg-surface outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
               placeholder="Course Description"
             />
+          </div>
+          <div className="rounded-md border border-outline-variant bg-surface-container/40 p-4 sm:p-5">
+            <div className="mb-3 flex items-center gap-2">
+              <p className="text-sm font-semibold tracking-wide text-on-surface">AI Import Options</p>
+              <HelpTooltip text="These settings control what happens when you create the course and can be updated later." />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="flex items-start gap-3 rounded-md border border-outline-variant bg-surface px-4 py-3">
+                <input
+                  type="checkbox"
+                  checked={aiGenerateVideoOrder}
+                  onChange={(e) => setAiGenerateVideoOrder(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-outline-variant bg-surface text-primary focus:ring-primary"
+                />
+                <span className="min-w-0">
+                  <span className="flex items-center gap-2 text-sm font-medium text-on-surface">
+                    <span>AI generated video order</span>
+                    <HelpTooltip text="Reorders the course videos using AI when the playlist is created." />
+                  </span>
+                  <span className="mt-1 block text-xs font-medium text-on-surface-variant">
+                    Useful for playlists that are out of sequence.
+                  </span>
+                </span>
+              </label>
+
+              <label className="flex items-start gap-3 rounded-md border border-outline-variant bg-surface px-4 py-3">
+                <input
+                  type="checkbox"
+                  checked={aiGenerateChapters}
+                  onChange={(e) => setAiGenerateChapters(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-outline-variant bg-surface text-primary focus:ring-primary"
+                />
+                <span className="min-w-0">
+                  <span className="flex items-center gap-2 text-sm font-medium text-on-surface">
+                    <span>AI generated chapters</span>
+                    <HelpTooltip text="Builds chapter modules from the imported videos after ordering is resolved." />
+                  </span>
+                  <span className="mt-1 block text-xs font-medium text-on-surface-variant">
+                    Creates chapter groupings automatically.
+                  </span>
+                </span>
+              </label>
+            </div>
           </div>
           <button
             onClick={handleSave}
@@ -241,8 +306,17 @@ export default function CourseSettings() {
             disabled={generatingChapters}
             className="flex items-center justify-center gap-2 border border-outline-variant bg-surface px-4 py-2 text-sm font-semibold tracking-wide text-on-surface rounded-md shadow-sm transition-colors hover:bg-surface-container disabled:opacity-50"
           >
-            {generatingChapters ? <Loader2 className="h-5 w-5 animate-spin text-primary" /> : <Sparkles className="h-5 w-5 text-primary" />}
-            Generate Chapters
+            {generatingChapters ? (
+              <span className="flex items-center gap-2 animate-pulse">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                Planning modules...
+              </span>
+            ) : (
+              <>
+                <Sparkles className="h-5 w-5 text-primary" />
+                Generate Chapters
+              </>
+            )}
           </button>
         </div>
 

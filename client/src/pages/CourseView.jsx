@@ -156,11 +156,31 @@ export default function CourseView() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [showSettingsHint, setShowSettingsHint] = useState(false);
 
   const videos = useMemo(() => data?.videos || [], [data?.videos]);
   const modules = useMemo(() => data?.modules || [], [data?.modules]);
   const progress = useMemo(() => data?.progress || [], [data?.progress]);
   const course = data?.course;
+
+  useEffect(() => {
+    if (!id) return;
+    const key = `coursessionai.course-settings-hint:${id}`;
+    if (window.localStorage.getItem(key)) return;
+
+    window.localStorage.setItem(key, '1');
+    const showTimeout = window.setTimeout(() => {
+      setShowSettingsHint(true);
+    }, 0);
+    const hideTimeout = window.setTimeout(() => {
+      setShowSettingsHint(false);
+    }, 6500);
+
+    return () => {
+      window.clearTimeout(showTimeout);
+      window.clearTimeout(hideTimeout);
+    };
+  }, [id]);
 
   const currentVideoId = useMemo(() => {
     if (selectedVideoId && videos.some(v => v.id === selectedVideoId)) {
@@ -286,20 +306,35 @@ export default function CourseView() {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  {/* Desktop sidebar toggle */}
-                  <button
-                    onClick={() => setDesktopSidebarOpen(!desktopSidebarOpen)}
-                    className="hidden lg:flex shrink-0 border border-outline-variant bg-surface rounded-md p-2.5 text-on-surface hover:bg-surface-container transition-colors shadow-sm"
-                    title={desktopSidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
-                  >
-                    {desktopSidebarOpen ? <PanelRightClose className="h-5 w-5" /> : <PanelRightOpen className="h-5 w-5" />}
-                  </button>
-                  <Link
-                    to={`/courses/${id}/settings`}
-                    className="shrink-0 border border-outline-variant bg-surface rounded-md p-2.5 text-on-surface hover:bg-surface-container transition-colors shadow-sm"
-                  >
-                    <Settings className="h-5 w-5" />
-                  </Link>
+                  <div className="relative flex items-center">
+                    <Link
+                      to={`/courses/${id}/settings`}
+                      className="shrink-0 border border-outline-variant bg-surface rounded-md p-2.5 text-on-surface hover:bg-surface-container transition-colors shadow-sm"
+                    >
+                      <Settings className="h-5 w-5" />
+                    </Link>
+                    {showSettingsHint && (
+                      <div className="absolute right-full top-0 z-30 mr-4 w-72 max-w-[calc(100vw-theme(spacing.20))] rounded-md border border-outline-variant bg-surface px-4 py-3 text-sm font-medium text-on-surface shadow-xl md:w-80">
+                        <div className="flex items-start gap-3">
+                          <span className="mt-1.5 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-primary animate-pulse" />
+                          <span className="min-w-0 flex-1 leading-relaxed">
+                            Open course settings here to adjust the import options and other course details.
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowSettingsHint(false);
+                              window.localStorage.setItem(`coursessionai.course-settings-hint:${id}`, '1');
+                            }}
+                            className="shrink-0 text-on-surface-variant hover:text-on-surface p-1 rounded-sm hover:bg-surface-container transition-colors"
+                            aria-label="Dismiss settings hint"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -417,9 +452,29 @@ export default function CourseView() {
         </div>
       )}
 
+      {/* Desktop sidebar floating toggle (Tag style) */}
+      <button
+        onClick={() => setDesktopSidebarOpen(!desktopSidebarOpen)}
+        className={`hidden lg:flex fixed top-[5.5rem] z-50 h-10 w-8 items-center justify-center bg-surface border border-outline-variant rounded-l-lg transition-all duration-500 ease-in-out hover:bg-surface-container shadow-sm group ${
+          desktopSidebarOpen ? 'right-80' : 'right-0'
+        }`}
+        title={desktopSidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
+      >
+        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 rounded-l-lg transition-colors" />
+        {desktopSidebarOpen ? (
+          <ChevronRight className="h-4 w-4 text-on-surface-variant group-hover:text-primary transition-colors" />
+        ) : (
+          <ChevronLeft className="h-4 w-4 text-primary group-hover:scale-110 transition-all" />
+        )}
+      </button>
+
       {/* Sidebar - desktop */}
-      {desktopSidebarOpen && (
-        <div className="hidden lg:block w-80 shrink-0 z-10 border-l border-outline-variant bg-surface shadow-xl">
+      <div 
+        className={`hidden lg:block shrink-0 z-10 bg-surface shadow-xl transition-all duration-500 ease-in-out overflow-hidden border-outline-variant ${
+          desktopSidebarOpen ? 'w-80 border-l opacity-100' : 'w-0 border-l-0 opacity-0'
+        }`}
+      >
+        <div className="w-80 h-full"> {/* Inner wrapper to maintain content width during transition */}
           <VideoSidebar
             modules={modules}
             videos={videos}
@@ -428,14 +483,14 @@ export default function CourseView() {
             onSelectVideo={setSelectedVideoId}
           />
         </div>
-      )}
+      </div>
 
       {/* AI Chat */}
       {currentVideo && (
         <ErrorBoundary
           title="AI tutor unavailable"
           resetKey={`chat-${currentVideo.id}`}
-          className="fixed bottom-24 right-4 z-50 w-[calc(100vw-2rem)] sm:bottom-8 sm:right-8 sm:w-96"
+          className="fixed bottom-24 left-4 z-50 sm:bottom-8 sm:left-8"
         >
           <Suspense fallback={null}>
             <VideoChat videoId={currentVideo.id} />

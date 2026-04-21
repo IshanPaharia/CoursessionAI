@@ -90,12 +90,25 @@ export default function ProfilePage() {
           <div className="inline-flex items-center justify-center h-16 w-16 mb-4 rounded-full bg-primary/10 text-primary">
             <Flame className={`h-8 w-8 ${streakData.currentStreak > 0 ? 'text-primary' : 'text-on-surface-variant'}`} />
           </div>
-          <div className="text-5xl sm:text-6xl font-display font-bold mb-2">
-            {streakData.currentStreak}
-          </div>
-          <p className="text-lg font-medium text-on-surface-variant">
-            Day Learning Streak
-          </p>
+          {streakData.currentStreak > 0 ? (
+            <>
+              <div className="text-5xl sm:text-6xl font-display font-bold mb-2">
+                {streakData.currentStreak}
+              </div>
+              <p className="text-lg font-medium text-on-surface-variant">
+                Day Learning Streak
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="text-2xl sm:text-3xl font-display font-bold mb-2">
+                Begin your journey
+              </div>
+              <p className="text-lg font-medium text-on-surface-variant max-w-xs mx-auto">
+                Start your first lesson to begin your streak
+              </p>
+            </>
+          )}
           <div className="mt-4 inline-block px-3 py-1 text-sm font-medium rounded-md bg-surface-container text-on-surface-variant">
             Longest: {streakData.longestStreak || 0} days
           </div>

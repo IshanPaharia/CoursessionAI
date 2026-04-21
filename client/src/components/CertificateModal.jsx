@@ -35,12 +35,24 @@ function CertificateCard({ certificate }) {
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f8f8f8; }
+          html, body { height: 100%; }
+          body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: #f8f8f8; 
+            padding: 40px;
+          }
           .cert {
-            width: 900px; padding: 60px; background: white;
-            border: 1px solid #e5e7eb; position: relative;
-            text-align: center; font-family: 'Inter', sans-serif;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            width: 900px; 
+            padding: 60px; 
+            background: white;
+            border: 1px solid #e5e7eb; 
+            position: relative;
+            text-align: center; 
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             border-radius: 12px;
           }
           .cert h1 { font-size: 42px; color: #111827; margin-bottom: 12px; font-weight: 700; letter-spacing: -0.02em; }
@@ -51,9 +63,40 @@ function CertificateCard({ certificate }) {
           .cert .id { font-size: 11px; color: #9ca3af; margin-top: 24px; font-family: monospace; }
           .divider { height: 1px; width: 100px; background: #e5e7eb; margin: 24px auto; }
           @media print { 
-            @page { margin: 0; }
-            body { background: white; } 
-            .cert { border: 1px solid #e5e7eb; box-shadow: none; } 
+            @page { size: landscape; margin: 0; }
+            html, body { 
+              height: 100%; 
+              margin: 0 !important; 
+              padding: 0 !important; 
+              background: white !important;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            body { 
+              display: flex !important; 
+              align-items: center !important; 
+              justify-content: center !important; 
+            }
+            .cert { 
+              width: 100% !important; 
+              height: 100% !important; 
+              max-width: none !important;
+              border: none !important; 
+              box-shadow: none !important; 
+              border-radius: 0 !important;
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: center !important;
+              padding: 0 10% !important;
+              background: white !important;
+            }
+            .cert h1 { font-size: 64px; }
+            .cert .name { font-size: 48px; }
+            .cert .course { font-size: 32px; }
+            .cert .sub { font-size: 16px; margin-bottom: 40px; }
+            .cert .date { font-size: 18px; }
+            .cert .id { font-size: 12px; }
+            .divider { width: 200px; margin: 40px auto; }
           }
         </style>
       </head>

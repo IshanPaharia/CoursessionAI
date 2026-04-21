@@ -6,11 +6,12 @@ node_modules/
 # Testing
 coverage/
 
-# Production
+# Production Builds
 build/
 dist/
 dist-ssr/
 out/
+client/dist/
 
 # Logs
 logs
@@ -21,7 +22,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Development files
+# Environment Variables (Secrets)
 .env
 .env.local
 .env.development.local
@@ -30,20 +31,26 @@ lerna-debug.log*
 *.env
 *.env.local
 
+# System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
 # IDEs and Editors
 .vscode/*
 !.vscode/extensions.json
 .idea/
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Vercel
-.vercel
+# Caches & Tooling
+.eslintcache
+.vite/
+.npm/
 
-# Other
-Thumbs.db
-desktop.ini
+# Vercel Deployment
+.vercel/
+.vercel

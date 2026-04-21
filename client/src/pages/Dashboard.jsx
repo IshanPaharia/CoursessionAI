@@ -7,6 +7,7 @@ import { useTogglePin } from '../hooks/useCertificates';
 import { SkeletonCard } from '../components/Skeleton';
 import ContinueCourseCard from '../components/ContinueCourseCard';
 import CertificateModal from '../components/CertificateModal';
+import HelpTooltip from '../components/HelpTooltip';
 
 function formatDuration(seconds) {
   const h = Math.floor(seconds / 3600);
@@ -22,6 +23,8 @@ export default function Dashboard() {
   const [tagModalCourseId, setTagModalCourseId] = useState(null);
   const [newTagName, setNewTagName] = useState('');
   const [certCourse, setCertCourse] = useState(null);
+  const [aiGenerateVideoOrder, setAiGenerateVideoOrder] = useState(true);
+  const [aiGenerateChapters, setAiGenerateChapters] = useState(false);
 
   const { data: courses, isLoading } = useCourses(searchQuery, selectedTag);
   const { data: tags = [] } = useTags();
@@ -36,7 +39,11 @@ export default function Dashboard() {
   const handleCreate = (e) => {
     e.preventDefault();
     if (!playlistUrl.trim()) return;
-    createCourse.mutate(playlistUrl.trim(), {
+    createCourse.mutate({
+      playlistUrl: playlistUrl.trim(),
+      aiGenerateVideoOrder,
+      aiGenerateChapters,
+    }, {
       onSuccess: () => setPlaylistUrl(''),
     });
   };
@@ -62,28 +69,77 @@ export default function Dashboard() {
       </div>
 
       {/* Add Course Form */}
-      <form onSubmit={handleCreate} className="mb-8 flex flex-col gap-3 sm:flex-row animate-slide-up" style={{ animationDelay: '100ms' }}>
-        <input
-          type="text"
-          value={playlistUrl}
-          onChange={(e) => setPlaylistUrl(e.target.value)}
-          placeholder="https://www.youtube.com/playlist?list=..."
-          className="input-field flex-1 text-sm sm:text-base"
-          disabled={createCourse.isPending}
-        />
-        <button
-          type="submit"
-          disabled={createCourse.isPending || !playlistUrl.trim()}
-          className="btn-primary"
-        >
-          {createCourse.isPending ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Plus className="h-5 w-5" />
-          )}
-          <span className="sm:hidden">ADD</span>
-          <span className="hidden sm:inline">ADD COURSE</span>
-        </button>
+      <form onSubmit={handleCreate} className="mb-8 animate-slide-up" style={{ animationDelay: '100ms' }}>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <input
+              type="text"
+              value={playlistUrl}
+              onChange={(e) => setPlaylistUrl(e.target.value)}
+              placeholder="https://www.youtube.com/playlist?list=..."
+              className="input-field flex-1 text-sm sm:text-base"
+              disabled={createCourse.isPending}
+            />
+            <button
+              type="submit"
+              disabled={createCourse.isPending || !playlistUrl.trim()}
+              className="btn-primary"
+            >
+              {createCourse.isPending ? (
+                <span className="flex items-center gap-2 animate-pulse">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  IMPORTING...
+                </span>
+              ) : (
+                <>
+                  <Plus className="h-5 w-5" />
+                  <span className="sm:hidden ml-2">ADD</span>
+                  <span className="hidden sm:inline ml-2">ADD COURSE</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-4 rounded-md border border-outline-variant bg-surface px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-start sm:gap-10">
+            <label className="flex items-start gap-3 text-sm font-medium text-on-surface">
+              <input
+                type="checkbox"
+                checked={aiGenerateVideoOrder}
+                onChange={(e) => setAiGenerateVideoOrder(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-outline-variant bg-surface text-primary focus:ring-primary"
+                disabled={createCourse.isPending}
+              />
+              <span className="min-w-0">
+                <span className="flex items-center gap-2">
+                  <span>AI generated video order</span>
+                  <HelpTooltip text="Uses AI to detect the most natural learning order for the videos before the course is created." />
+                </span>
+                <span className="mt-1 block text-xs font-medium text-on-surface-variant">
+                  Helps when playlist order is scrambled or reversed.
+                </span>
+              </span>
+            </label>
+
+            <label className="flex items-start gap-3 text-sm font-medium text-on-surface">
+              <input
+                type="checkbox"
+                checked={aiGenerateChapters}
+                onChange={(e) => setAiGenerateChapters(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-outline-variant bg-surface text-primary focus:ring-primary"
+                disabled={createCourse.isPending}
+              />
+              <span className="min-w-0">
+                <span className="flex items-center gap-2">
+                  <span>AI generated chapters</span>
+                  <HelpTooltip text="Groups the imported videos into chapters after any AI video ordering has been applied." />
+                </span>
+                <span className="mt-1 block text-xs font-medium text-on-surface-variant">
+                  Automatically organizes the course into chapter modules.
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
       </form>
 
       {/* Error */}
@@ -331,32 +387,43 @@ export default function Dashboard() {
 
                   {/* Tag dropdown */}
                   {tagModalCourseId === course.id && (
-                    <div className="absolute left-0 top-10 w-48 bg-surface border border-outline-variant rounded-md shadow-lg p-2 animate-fade-in pointer-events-auto origin-top-left z-30 flex flex-col gap-1">
-                      {tags.map((tag) => {
-                        const isTagged = course.tags?.some(t => t.id === tag.id);
-                        return (
-                          <button
-                            key={tag.id}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              if (isTagged) {
-                                untagCourse.mutate({ tagId: tag.id, courseId: course.id });
-                              } else {
-                                tagCourse.mutate({ tagId: tag.id, courseId: course.id });
-                              }
-                            }}
-                            className="flex w-full items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-sm hover:bg-surface-container transition-colors"
-                          >
-                            <span className="flex-1 text-left">{tag.name}</span>
-                            {isTagged && <CheckCircle2 className="h-4 w-4 text-primary" />}
-                          </button>
-                        );
-                      })}
-                      {tags.length === 0 && (
-                        <p className="px-3 py-2 text-xs font-medium text-on-surface-variant">No tags yet.</p>
-                      )}
-                    </div>
+                    <>
+                      <div 
+                        className="fixed inset-0 z-20 cursor-default" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setTagModalCourseId(null);
+                        }}
+                      />
+                      <div className="absolute left-0 top-10 w-48 bg-surface border border-outline-variant rounded-md shadow-lg p-2 animate-fade-in pointer-events-auto origin-top-left z-30 flex flex-col gap-1">
+                        {tags.map((tag) => {
+                          const isTagged = course.tags?.some(t => t.id === tag.id);
+                          return (
+                            <button
+                              key={tag.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                if (isTagged) {
+                                  untagCourse.mutate({ tagId: tag.id, courseId: course.id });
+                                } else {
+                                  tagCourse.mutate({ tagId: tag.id, courseId: course.id });
+                                }
+                                setTagModalCourseId(null);
+                              }}
+                              className="flex w-full items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-sm hover:bg-surface-container transition-colors"
+                            >
+                              <span className="flex-1 text-left">{tag.name}</span>
+                              {isTagged && <CheckCircle2 className="h-4 w-4 text-primary" />}
+                            </button>
+                          );
+                        })}
+                        {tags.length === 0 && (
+                          <p className="px-3 py-2 text-xs font-medium text-on-surface-variant">No tags yet.</p>
+                        )}
+                      </div>
+                    </>
                   )}
                 </div>
 

@@ -4,6 +4,7 @@ import { UserButton, useAuth } from '@clerk/react';
 import { BookOpen, LayoutDashboard, User, Home, Menu, X, Sun, Moon } from 'lucide-react';
 import StreakBadge from './StreakBadge';
 import { useTheme } from './ThemeProvider';
+import icon from '../assets/icon.png';
 
 export default function AppLayout() {
   const { isSignedIn } = useAuth();
@@ -21,8 +22,8 @@ export default function AppLayout() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
           {/* Logo */}
           <Link to="/" className="group flex items-center gap-3 transition-transform hover:-translate-y-0.5 duration-200">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm group-hover:shadow-md transition-all">
-              <BookOpen className="h-5 w-5 text-on-primary" />
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md transition-all">
+              <img src={icon} alt="Logo" className="h-full w-full object-cover dark:invert" />
             </div>
             <span className="text-xl font-display font-bold tracking-tight">
               Coursession<span className="text-primary group-hover:text-primary-dim transition-colors ml-0.5">AI</span>

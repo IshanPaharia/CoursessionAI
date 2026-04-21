@@ -5,7 +5,15 @@ import {
   fetchPlaylistItems,
   fetchVideoDurations,
 } from '../services/youtube.js';
-import { generateVideoOrder } from '../services/openrouter.js';
+import {
+  applyChapterSuggestions,
+  buildChapterSuggestions,
+  reorderCourseVideos,
+} from '../services/courseAi.js';
+
+function toBool(value) {
+  return value === true || value === 'true' || value === 1 || value === '1';
+}
 
 export async function getAllCourses(req, res, next) {
   try {
@@ -69,7 +77,11 @@ export async function getAllCourses(req, res, next) {
 
 export async function createCourse(req, res, next) {
   try {
-    const { playlistUrl } = req.body;
+    const {
+      playlistUrl,
+      aiGenerateVideoOrder,
+      aiGenerateChapters,
+    } = req.body;
 
     if (!playlistUrl) {
       return res.status(400).json({ error: 'playlistUrl is required' });
@@ -89,10 +101,28 @@ export async function createCourse(req, res, next) {
 
     const videoIds = items.map(i => i.youtubeId);
     const durations = await fetchVideoDurations(videoIds);
+    const shouldReorderVideos = toBool(aiGenerateVideoOrder);
+    const shouldGenerateChapters = toBool(aiGenerateChapters);
 
     const courseRows = await sql`
-      INSERT INTO courses (user_id, playlist_url, title, description, thumbnail_url)
-      VALUES (${req.userId}, ${playlistUrl}, ${details.title}, ${details.description}, ${details.thumbnailUrl})
+      INSERT INTO courses (
+        user_id,
+        playlist_url,
+        title,
+        description,
+        thumbnail_url,
+        ai_generate_video_order,
+        ai_generate_chapters
+      )
+      VALUES (
+        ${req.userId},
+        ${playlistUrl},
+        ${details.title},
+        ${details.description},
+        ${details.thumbnailUrl},
+        ${shouldReorderVideos},
+        ${shouldGenerateChapters}
+      )
       RETURNING *
     `;
     const course = courseRows[0];
@@ -115,36 +145,34 @@ export async function createCourse(req, res, next) {
       `;
     }
 
+    let modules = [mod];
     let videos = await sql`
       SELECT * FROM videos WHERE course_id = ${course.id} ORDER BY order_index
     `;
 
-    if (videos.length > 1) {
+    if (shouldReorderVideos) {
       try {
-        const correctOrder = await generateVideoOrder(videos.map(v => v.title));
-        if (Array.isArray(correctOrder) && correctOrder.length === videos.length) {
-          for (let newIdx = 0; newIdx < correctOrder.length; newIdx++) {
-            const originalIdx = correctOrder[newIdx];
-            const video = videos[originalIdx];
-            if (video) {
-              await sql`
-                UPDATE videos SET order_index = ${newIdx}
-                WHERE id = ${video.id} AND course_id = ${course.id}
-              `;
-            }
-          }
-          videos = await sql`
-            SELECT * FROM videos WHERE course_id = ${course.id} ORDER BY order_index
-          `;
-        }
+        const reordered = await reorderCourseVideos(course.id, req.userId);
+        videos = reordered.videos;
       } catch (err) {
         console.error('Auto AI sort failed:', err);
       }
     }
 
+    if (shouldGenerateChapters) {
+      try {
+        const chapters = await buildChapterSuggestions(course.id, req.userId);
+        const applied = await applyChapterSuggestions(course.id, req.userId, chapters);
+        modules = applied.modules;
+        videos = applied.videos;
+      } catch (err) {
+        console.error('Auto AI chapter generation failed:', err);
+      }
+    }
+
     res.status(201).json({
       course: { ...course, video_count: videos.length, watched_count: 0 },
-      modules: [mod],
+      modules,
       videos,
     });
   } catch (err) {
@@ -224,11 +252,13 @@ export async function getCourse(req, res, next) {
 
 export async function updateCourse(req, res, next) {
   try {
-    const { title, description } = req.body;
+    const { title, description, aiGenerateVideoOrder, aiGenerateChapters } = req.body;
     const rows = await sql`
       UPDATE courses
       SET title = COALESCE(${title}, title),
           description = COALESCE(${description}, description),
+          ai_generate_video_order = COALESCE(${aiGenerateVideoOrder ?? null}, ai_generate_video_order),
+          ai_generate_chapters = COALESCE(${aiGenerateChapters ?? null}, ai_generate_chapters),
           updated_at = NOW()
       WHERE id = ${req.params.id} AND user_id = ${req.userId}
       RETURNING *

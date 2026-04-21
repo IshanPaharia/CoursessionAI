@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import sql from './db/index.js';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { clerkAuth } from './middleware/auth.js';
@@ -21,6 +22,10 @@ import certificateRoutes from './routes/certificates.js';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(cors({
   origin: (process.env.CLIENT_URL || 'http://localhost:5173').trim(),
   credentials: true,
@@ -36,6 +41,21 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+const aiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: Number(process.env.AI_RATE_LIMIT_MAX),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Too many AI requests. Please wait a few minutes and try again.',
+  },
+});
+
+const limitAiPost = (req, res, next) => {
+  if (req.method !== 'POST') return next();
+  return aiLimiter(req, res, next);
+};
+
 app.use(clerkAuth);
 
 app.use('/api/auth', authRoutes);
@@ -44,20 +64,38 @@ app.use('/api/videos', videoRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/modules', moduleRoutes);
 app.use('/api/notes', noteRoutes);
-app.use('/api/ai', aiRoutes);
+app.use('/api/ai', aiLimiter, aiRoutes);
 app.use('/api/streaks', streakRoutes);
+app.use('/api/quizzes/generate', aiLimiter);
 app.use('/api/quizzes', quizRoutes);
+app.use('/api/summaries/:videoId/generate', aiLimiter);
 app.use('/api/summaries', summaryRoutes);
-app.use('/api/chat', chatRoutes);
+app.use('/api/chat', limitAiPost, chatRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/certificates', certificateRoutes);
 
-app.get('/api/health', (_req, res) => {
-  res.json({
-    status: 'ok',
-    uptime: process.uptime(),
-  });
+app.get('/api/health', async (_req, res) => {
+  try {
+    // Check DB health
+    await sql`SELECT 1`;
+    
+    res.json({
+      status: 'ok',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      database: 'connected',
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'error',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      database: 'disconnected',
+      error: error.message
+    });
+  }
 });
 
 function isNeonError(err) {
@@ -79,6 +117,20 @@ function isNeonError(err) {
 app.use((err, _req, res, _next) => {
   console.error('Unhandled error:', err);
 
+  if (err.status === 401 && err.code === 'USER_NOT_SYNCED') {
+    return res.status(401).json({
+      error: 'Account setup is incomplete. Please sign out and sign in again.',
+      code: 'USER_NOT_SYNCED',
+    });
+  }
+
+  if (err.status === 401 && err.code === 'UNAUTHENTICATED') {
+    return res.status(401).json({
+      error: 'Unauthorized',
+      code: 'UNAUTHENTICATED',
+    });
+  }
+
   if (err.status) {
     return res.status(err.status).json({
       error: err.message || 'Request failed',
@@ -97,5 +149,5 @@ app.use((err, _req, res, _next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  // Server started
 });

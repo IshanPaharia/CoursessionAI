@@ -3,18 +3,27 @@ import sql from '../db/index.js';
 
 export const clerkAuth = clerkMiddleware();
 
+class AuthError extends Error {
+  constructor(message, code) {
+    super(message);
+    this.name = 'AuthError';
+    this.status = 401;
+    this.code = code;
+  }
+}
+
 export async function requireAuth(req, res, next) {
   try {
     const { userId: clerkId } = getAuth(req);
 
     if (!clerkId) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      throw new AuthError('Unauthorized', 'UNAUTHENTICATED');
     }
 
     const rows = await sql`SELECT id FROM users WHERE clerk_id = ${clerkId}`;
 
     if (rows.length === 0) {
-      return res.status(401).json({ error: 'User not found. Please complete sign-up.' });
+      throw new AuthError('Account setup is incomplete. Please sign out and sign in again.', 'USER_NOT_SYNCED');
     }
 
     req.userId = rows[0].id;

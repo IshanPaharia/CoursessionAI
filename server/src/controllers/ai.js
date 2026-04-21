@@ -1,5 +1,10 @@
 import sql from '../db/index.js';
-import { generateCourseDescription, generateChapterSuggestions, generateVideoOrder } from '../services/openrouter.js';
+import { generateCourseDescription } from '../services/openrouter.js';
+import {
+  applyChapterSuggestions,
+  buildChapterSuggestions,
+  reorderCourseVideos,
+} from '../services/courseAi.js';
 
 export async function aiGenerateDescription(req, res, next) {
   try {
@@ -35,26 +40,7 @@ export async function aiGenerateDescription(req, res, next) {
 export async function aiGenerateChapters(req, res, next) {
   try {
     const { courseId } = req.body;
-
-    const courseRows = await sql`
-      SELECT id FROM courses WHERE id = ${courseId} AND user_id = ${req.userId}
-    `;
-    if (courseRows.length === 0) {
-      return res.status(404).json({ error: 'Course not found' });
-    }
-
-    const videos = await sql`
-      SELECT id, title FROM videos WHERE course_id = ${courseId} ORDER BY order_index
-    `;
-
-    const chapters = await generateChapterSuggestions(videos.map(v => v.title));
-
-    const result = chapters.map(ch => ({
-      title: ch.title,
-      videoIds: (ch.videoIndices || [])
-        .map(idx => videos[idx - 1]?.id)
-        .filter(Boolean),
-    }));
+    const result = await buildChapterSuggestions(courseId, req.userId);
 
     res.json({ chapters: result });
   } catch (err) {
@@ -65,33 +51,7 @@ export async function aiGenerateChapters(req, res, next) {
 export async function aiApplyChapters(req, res, next) {
   try {
     const { courseId, chapters } = req.body;
-
-    const courseRows = await sql`
-      SELECT id FROM courses WHERE id = ${courseId} AND user_id = ${req.userId}
-    `;
-    if (courseRows.length === 0) {
-      return res.status(404).json({ error: 'Course not found' });
-    }
-
-    await sql`DELETE FROM modules WHERE course_id = ${courseId}`;
-
-    for (let i = 0; i < chapters.length; i++) {
-      const ch = chapters[i];
-      const modRows = await sql`
-        INSERT INTO modules (course_id, title, order_index)
-        VALUES (${courseId}, ${ch.title}, ${i})
-        RETURNING id
-      `;
-
-      if (ch.videoIds?.length > 0) {
-        for (const videoId of ch.videoIds) {
-          await sql`
-            UPDATE videos SET module_id = ${modRows[0].id}
-            WHERE id = ${videoId} AND course_id = ${courseId}
-          `;
-        }
-      }
-    }
+    await applyChapterSuggestions(courseId, req.userId, chapters);
 
     res.json({ applied: true });
   } catch (err) {
@@ -102,42 +62,9 @@ export async function aiApplyChapters(req, res, next) {
 export async function aiReorderVideos(req, res, next) {
   try {
     const { courseId } = req.body;
+    const result = await reorderCourseVideos(courseId, req.userId);
 
-    const courseRows = await sql`
-      SELECT id FROM courses WHERE id = ${courseId} AND user_id = ${req.userId}
-    `;
-    if (courseRows.length === 0) {
-      return res.status(404).json({ error: 'Course not found' });
-    }
-
-    const videos = await sql`
-      SELECT id, title FROM videos WHERE course_id = ${courseId} ORDER BY order_index
-    `;
-
-    if (videos.length <= 1) {
-      return res.json({ reordered: false, message: 'Not enough videos to reorder' });
-    }
-
-    const correctOrder = await generateVideoOrder(videos.map(v => v.title));
-
-    // Validate the response
-    if (!Array.isArray(correctOrder) || correctOrder.length !== videos.length) {
-      return res.status(500).json({ error: 'AI returned invalid order' });
-    }
-
-    // Update order_index for each video
-    for (let newIdx = 0; newIdx < correctOrder.length; newIdx++) {
-      const originalIdx = correctOrder[newIdx];
-      const video = videos[originalIdx];
-      if (video) {
-        await sql`
-          UPDATE videos SET order_index = ${newIdx}
-          WHERE id = ${video.id} AND course_id = ${courseId}
-        `;
-      }
-    }
-
-    res.json({ reordered: true });
+    res.json({ reordered: result.reordered });
   } catch (err) {
     next(err);
   }

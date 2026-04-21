@@ -26,8 +26,9 @@ export default function VideoSummary({ videoId }) {
       </div>
 
       {(isLoading || isGeneratingSummary) && (
-        <div className="mt-6 flex items-center justify-center py-6 text-on-surface-variant">
-          <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="mt-6 flex flex-col items-center justify-center py-6 text-center text-on-surface-variant">
+          <Loader2 className="h-8 w-8 animate-spin mb-3 text-primary" />
+          <p className="text-sm font-medium">Studying video content to generate a summary...</p>
         </div>
       )}
 

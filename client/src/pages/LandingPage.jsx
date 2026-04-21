@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@clerk/react';
 import { ArrowRight, Play, BookOpen, BarChart3, Sparkles, Layers, Bookmark, Zap } from 'lucide-react';
+import icon from '../assets/icon.png';
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
@@ -9,7 +10,7 @@ export default function LandingPage() {
 
   return (
     <div className="w-full min-h-screen pb-16 sm:pb-0 relative bg-background">
-      <section className="relative w-full pt-28 sm:pt-36 pb-20 px-4 sm:px-6 z-10">
+      <section className="relative w-full pt-20 sm:pt-28 pb-20 px-4 sm:px-6 z-10">
         <div className="mx-auto max-w-7xl flex flex-col items-center text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-outline text-primary text-sm font-semibold mb-8 animate-slide-up">
             <Sparkles className="h-4 w-4" />
@@ -131,7 +132,7 @@ export default function LandingPage() {
                 <div className="p-6">
                   <h3 className="font-display text-2xl font-bold mb-3">{title}</h3>
                   <p className="text-on-surface-variant font-medium leading-relaxed">
-                    A placeholder preview for the live app experience.
+                    A focused workspace for watching, reviewing, and studying each course.
                   </p>
                 </div>
               </div>
@@ -142,7 +143,7 @@ export default function LandingPage() {
 
       <section className="relative w-full py-24 px-4 sm:px-6 z-10 border-t border-outline-variant">
         <div className="mx-auto max-w-4xl text-center">
-          <BookOpen className="h-12 w-12 mx-auto text-primary mb-6" />
+          <img src={icon} alt="Logo" loading="lazy" className="h-12 w-12 mx-auto mb-6 dark:invert" />
           <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight mb-6">
             Ready to turn a playlist into a course?
           </h2>
@@ -160,17 +161,17 @@ export default function LandingPage() {
 
       <footer className="w-full bg-surface border-t border-outline-variant py-12 text-on-surface-variant">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <BookOpen className="h-6 w-6 text-primary" />
+          <div className="flex flex-1 items-center gap-3">
+            <img src={icon} alt="Logo" loading="lazy" className="h-6 w-6 dark:invert" />
             <span className="font-display font-bold text-xl tracking-tight text-on-surface">
               CoursessionAI
             </span>
           </div>
-          <p className="font-medium text-sm">© 2025 CoursessionAI.</p>
-          <div className="flex gap-6 text-sm font-medium">
-            <a href="#" className="hover:text-primary transition-colors">Student Resources</a>
-            <a href="#" className="hover:text-primary transition-colors">Privacy</a>
-            <a href="#" className="hover:text-primary transition-colors">Support</a>
+          
+          <p className="font-medium text-sm text-center">© 2026 CoursessionAI.</p>
+          
+          <div className="flex flex-1 justify-center md:justify-end gap-6 text-sm font-medium">
+            Made with love for learning!
           </div>
         </div>
       </footer>

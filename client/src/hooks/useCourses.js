@@ -24,8 +24,12 @@ export function useCreateCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (playlistUrl) => {
-      const { data } = await api.post('/api/courses', { playlistUrl });
+    mutationFn: async ({ playlistUrl, aiGenerateVideoOrder, aiGenerateChapters }) => {
+      const { data } = await api.post('/api/courses', {
+        playlistUrl,
+        aiGenerateVideoOrder,
+        aiGenerateChapters,
+      });
       return data;
     },
     onMutate: () => toast.loading('Creating course...'),
@@ -79,8 +83,13 @@ export function useUpdateCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, title, description }) => {
-      const { data } = await api.put(`/api/courses/${id}`, { title, description });
+    mutationFn: async ({ id, title, description, aiGenerateVideoOrder, aiGenerateChapters }) => {
+      const { data } = await api.put(`/api/courses/${id}`, {
+        title,
+        description,
+        aiGenerateVideoOrder,
+        aiGenerateChapters,
+      });
       return data;
     },
     onSuccess: (_, variables) => {
