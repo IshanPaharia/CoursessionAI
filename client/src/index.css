@@ -166,11 +166,13 @@ h1, h2, h3, h4, h5, h6, .font-display {
 
   /* Animations */
   .animate-fade-in {
-    animation: fade-in 0.4s ease-out forwards;
+    animation: fade-in 0.4s ease-out both;
+    backface-visibility: hidden;
   }
 
   .animate-slide-up {
-    animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    backface-visibility: hidden;
     transform: translateZ(0);
   }
 
