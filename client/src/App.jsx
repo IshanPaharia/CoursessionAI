@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import AppLayout from './components/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthSync from './components/AuthSync';
@@ -77,6 +79,8 @@ export default function App() {
           </AuthSync>
         </ToastProvider>
       </ThemeProvider>
+      <Analytics />
+      <SpeedInsights />
     </QueryClientProvider>
   );
 }
