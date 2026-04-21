@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Award, Download, Share2, X, Loader2, CheckCircle2 } from 'lucide-react';
 import { useCertificate, useGenerateCertificate } from '../hooks/useCertificates';
 

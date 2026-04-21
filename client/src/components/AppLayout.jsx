@@ -39,7 +39,7 @@ export default function AppLayout() {
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-xl border border-transparent ${
                     isActive('/dashboard')
                       ? 'bg-primary/10 text-primary border-primary/20'
-                      : 'text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
+                      : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
                   }`}
                 >
                   <LayoutDashboard className="h-4 w-4" />
@@ -50,7 +50,7 @@ export default function AppLayout() {
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-xl border border-transparent ${
                     isActive('/profile')
                       ? 'bg-primary/10 text-primary border-primary/20'
-                      : 'text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
+                      : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
                   }`}
                 >
                   <User className="h-4 w-4" />
@@ -127,7 +127,7 @@ export default function AppLayout() {
               className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all ${
                 isActive('/dashboard')
                   ? 'bg-primary/10 text-primary border border-primary/20'
-                  : 'text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
+                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
               }`}
             >
               <LayoutDashboard className="h-5 w-5" />
@@ -139,7 +139,7 @@ export default function AppLayout() {
               className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all ${
                 isActive('/profile')
                   ? 'bg-primary/10 text-primary border border-primary/20'
-                  : 'text-on-surface-variant hover:bg-surface-variant hover:text-on-surface'
+                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
               }`}
             >
               <User className="h-5 w-5" />

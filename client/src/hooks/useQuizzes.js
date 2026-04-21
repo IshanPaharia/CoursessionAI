@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api.js';
+import { toast } from '../lib/toastStore.js';
+
+function getErrorMessage(error, fallback) {
+  return error?.response?.data?.error || error?.message || fallback;
+}
 
 export function useQuiz(videoId) {
   return useQuery({
@@ -20,8 +25,11 @@ export function useGenerateQuiz() {
       const { data } = await api.post(`/api/quizzes/generate/${videoId}`);
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['quiz'] });
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to generate quiz.'));
     },
   });
 }

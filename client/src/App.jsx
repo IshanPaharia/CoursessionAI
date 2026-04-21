@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppLayout from './components/AppLayout';
@@ -5,13 +6,15 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AuthSync from './components/AuthSync';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider } from './components/ThemeProvider';
-import LandingPage from './pages/LandingPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
-import Dashboard from './pages/Dashboard';
-import CourseView from './pages/CourseView';
-import CourseSettings from './pages/CourseSettings';
-import ProfilePage from './pages/ProfilePage';
+import PageLoader from './components/PageLoader';
+
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const CourseView = lazy(() => import('./pages/CourseView'));
+const CourseSettings = lazy(() => import('./pages/CourseSettings'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,45 +32,47 @@ export default function App() {
         <ToastProvider>
           <AuthSync>
             <BrowserRouter>
-              <Routes>
-                <Route element={<AppLayout />}>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/sign-in/*" element={<SignInPage />} />
-                  <Route path="/sign-up/*" element={<SignUpPage />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/courses/:id"
-                    element={
-                      <ProtectedRoute>
-                        <CourseView />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/courses/:id/settings"
-                    element={
-                      <ProtectedRoute>
-                        <CourseSettings />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/profile"
-                    element={
-                      <ProtectedRoute>
-                        <ProfilePage />
-                      </ProtectedRoute>
-                    }
-                  />
-                </Route>
-              </Routes>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route element={<AppLayout />}>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/sign-in/*" element={<SignInPage />} />
+                    <Route path="/sign-up/*" element={<SignUpPage />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/courses/:id"
+                      element={
+                        <ProtectedRoute>
+                          <CourseView />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/courses/:id/settings"
+                      element={
+                        <ProtectedRoute>
+                          <CourseSettings />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/profile"
+                      element={
+                        <ProtectedRoute>
+                          <ProfilePage />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Route>
+                </Routes>
+              </Suspense>
             </BrowserRouter>
           </AuthSync>
         </ToastProvider>

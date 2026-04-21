@@ -4,17 +4,17 @@ import { useEffect, useRef } from 'react';
 
 export default function VideoSummary({ videoId }) {
   const { data, isLoading } = useSummary(videoId);
-  const generateSummary = useGenerateSummary();
+  const { mutate: generateSummary, isPending: isGeneratingSummary } = useGenerateSummary();
   const hasGeneratedRef = useRef({});
 
   const summary = data?.summary;
 
   useEffect(() => {
-    if (!isLoading && !summary && !generateSummary.isPending && !hasGeneratedRef.current[videoId]) {
+    if (!isLoading && !summary && !isGeneratingSummary && !hasGeneratedRef.current[videoId]) {
       hasGeneratedRef.current[videoId] = true;
-      generateSummary.mutate(videoId);
+      generateSummary(videoId);
     }
-  }, [videoId, isLoading, summary, generateSummary.isPending]);
+  }, [videoId, isLoading, summary, isGeneratingSummary, generateSummary]);
 
   return (
     <div className="learning-card p-4 sm:p-6 bg-surface">
@@ -25,7 +25,7 @@ export default function VideoSummary({ videoId }) {
         </div>
       </div>
 
-      {(isLoading || generateSummary.isPending) && (
+      {(isLoading || isGeneratingSummary) && (
         <div className="mt-6 flex items-center justify-center py-6 text-on-surface-variant">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>

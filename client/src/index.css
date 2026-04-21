@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Intentionally mirrors sans so heading typography can diverge later. */
   --font-display: 'Inter', system-ui, -apple-system, sans-serif;
 
   --color-primary: var(--theme-primary);
@@ -75,7 +75,7 @@ body {
 
 h1, h2, h3, h4, h5, h6, .font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 /* Scrollbar */
@@ -119,24 +119,44 @@ h1, h2, h3, h4, h5, h6, .font-display {
 
 @layer utilities {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 font-medium px-6 py-3 transition-colors duration-200 bg-primary text-on-primary hover:bg-primary-dim rounded-md;
+    @apply inline-flex items-center justify-center gap-2 font-medium px-6 py-3 bg-primary text-on-primary hover:bg-primary-dim rounded-md transform-gpu;
+    transition: all 0.15s ease;
+    will-change: transform;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.98) translateZ(0);
   }
   
   .btn-primary:disabled {
     @apply opacity-50 cursor-not-allowed;
+    transform: none;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 font-medium px-6 py-3 transition-colors duration-200 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-md border border-outline-variant;
+    @apply inline-flex items-center justify-center gap-2 font-medium px-6 py-3 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-md border border-outline-variant transform-gpu;
+    transition: all 0.15s ease;
+    will-change: transform;
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.98) translateZ(0);
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 font-medium px-4 py-2 transition-colors duration-200 text-on-surface hover:text-primary hover:bg-surface-container rounded-md;
+    @apply inline-flex items-center justify-center gap-2 font-medium px-4 py-2 text-on-surface hover:text-primary hover:bg-surface-container rounded-md transform-gpu;
+    transition: all 0.15s ease;
+    will-change: transform;
+  }
+
+  .btn-ghost:active {
+    transform: scale(0.98) translateZ(0);
   }
 
   /* Minimal Cards */
   .learning-card {
-    @apply bg-surface border border-outline-variant p-8 transition-colors duration-200 hover:border-outline;
+    @apply bg-surface border border-outline-variant p-8 transition-all duration-150 ease-out hover:border-outline transform-gpu;
+    will-change: transform;
   }
 
   /* Input fields */
@@ -151,6 +171,40 @@ h1, h2, h3, h4, h5, h6, .font-display {
 
   .animate-slide-up {
     animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform: translateZ(0);
+  }
+
+  .slide-in-from-right {
+    animation: slide-in-from-right 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-surface-container-high) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--color-surface-container-high);
+    border-radius: 999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--color-on-surface-variant);
+  }
+
+  .tracking-tight {
+    letter-spacing: 0;
   }
 }
 
@@ -162,6 +216,11 @@ h1, h2, h3, h4, h5, h6, .font-display {
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-from-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 @media (max-width: 768px) {

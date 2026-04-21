@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { lazy, Suspense, useState, useMemo, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ChevronLeft,
@@ -15,18 +15,26 @@ import {
   PanelRightClose,
   PanelRightOpen,
   PlayCircle,
-  Sparkles,
 } from 'lucide-react';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import api from '../lib/api.js';
 import { useCourse } from '../hooks/useCourses';
 import { useToggleWatched } from '../hooks/useProgress';
-import VideoNotes from '../components/VideoNotes';
-import VideoBookmarks from '../components/VideoBookmarks';
-import VideoQuiz from '../components/VideoQuiz';
-import VideoSummary from '../components/VideoSummary';
-import VideoChat from '../components/VideoChat';
-import ShortcutsModal from '../components/ShortcutsModal';
+import ErrorBoundary from '../components/ErrorBoundary';
+
+const VideoNotes = lazy(() => import('../components/VideoNotes'));
+const VideoBookmarks = lazy(() => import('../components/VideoBookmarks'));
+const VideoQuiz = lazy(() => import('../components/VideoQuiz'));
+const VideoSummary = lazy(() => import('../components/VideoSummary'));
+const VideoChat = lazy(() => import('../components/VideoChat'));
+const ShortcutsModal = lazy(() => import('../components/ShortcutsModal'));
+
+function PanelLoader({ label = 'Loading...' }) {
+  return (
+    <div className="learning-card flex min-h-24 items-center justify-center gap-3 bg-surface p-5 text-on-surface-variant">
+      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+      <span className="text-sm font-semibold">{label}</span>
+    </div>
+  );
+}
 
 function formatDuration(seconds) {
   if (!seconds) return '0:00';
@@ -37,8 +45,7 @@ function formatDuration(seconds) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-function VideoSidebar({ courseId, modules, videos, progress, currentVideoId, onSelectVideo, onClose }) {
-  const queryClient = useQueryClient();
+function VideoSidebar({ modules, videos, progress, currentVideoId, onSelectVideo, onClose }) {
   const [collapsedModules, setCollapsedModules] = useState({});
   const progressMap = useMemo(() => {
     const map = {};
@@ -68,7 +75,7 @@ function VideoSidebar({ courseId, modules, videos, progress, currentVideoId, onS
             )}
           </div>
         </div>
-        <div className="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
+        <div className="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
           <div className="h-full bg-primary transition-all duration-300" style={{ width: `${overallProgress}%` }} />
         </div>
         <p className="mt-2 text-xs font-medium text-on-surface-variant">
@@ -144,16 +151,28 @@ export default function CourseView() {
   const { id } = useParams();
   const { data, isLoading, error } = useCourse(id);
   const toggleWatched = useToggleWatched(id);
-  const [currentVideoId, setCurrentVideoId] = useState(null);
+  const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [descExpanded, setDescExpanded] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
-  const videos = data?.videos || [];
-  const modules = data?.modules || [];
-  const progress = data?.progress || [];
+  const videos = useMemo(() => data?.videos || [], [data?.videos]);
+  const modules = useMemo(() => data?.modules || [], [data?.modules]);
+  const progress = useMemo(() => data?.progress || [], [data?.progress]);
   const course = data?.course;
+
+  const currentVideoId = useMemo(() => {
+    if (selectedVideoId && videos.some(v => v.id === selectedVideoId)) {
+      return selectedVideoId;
+    }
+
+    const unwatched = videos.find(
+      v => !progress.find(p => p.video_id === v.id && p.is_watched)
+    );
+
+    return unwatched?.id || videos[0]?.id || null;
+  }, [selectedVideoId, videos, progress]);
 
   const currentVideo = useMemo(
     () => videos.find(v => v.id === currentVideoId),
@@ -170,25 +189,17 @@ export default function CourseView() {
     [progress, currentVideoId]
   );
 
-  useEffect(() => {
-    if (videos.length > 0 && !currentVideoId) {
-      const unwatched = videos.find(
-        v => !progress.find(p => p.video_id === v.id && p.is_watched)
-      );
-      setCurrentVideoId(unwatched?.id || videos[0].id);
-    }
-  }, [videos, progress, currentVideoId]);
-
   const handlePrev = useCallback(() => {
-    if (currentIndex > 0) setCurrentVideoId(videos[currentIndex - 1].id);
+    if (currentIndex > 0) setSelectedVideoId(videos[currentIndex - 1].id);
   }, [currentIndex, videos]);
 
   const handleNext = useCallback(() => {
-    if (currentIndex < videos.length - 1) setCurrentVideoId(videos[currentIndex + 1].id);
+    if (currentIndex < videos.length - 1) setSelectedVideoId(videos[currentIndex + 1].id);
   }, [currentIndex, videos]);
 
   const handleToggleWatched = useCallback(() => {
     if (currentVideoId) {
+      setSelectedVideoId(currentVideoId);
       toggleWatched.mutate({ videoId: currentVideoId, isWatched: !isWatched });
     }
   }, [currentVideoId, isWatched, toggleWatched]);
@@ -232,7 +243,9 @@ export default function CourseView() {
   return (
     <div className="flex h-[calc(100vh-4rem)] relative overflow-hidden bg-background text-on-surface">
       {/* Shortcuts modal */}
-      <ShortcutsModal isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      <Suspense fallback={null}>
+        <ShortcutsModal isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      </Suspense>
 
       {/* Mobile sidebar toggle */}
       <button
@@ -325,12 +338,20 @@ export default function CourseView() {
 
               {/* AI Summary - Order swapped to be above VideoQuiz */}
               <div className="mt-10 animate-slide-up">
-                <VideoSummary videoId={currentVideo.id} />
+                <ErrorBoundary title="Summary unavailable" resetKey={`summary-${currentVideo.id}`}>
+                  <Suspense fallback={<PanelLoader label="Loading summary..." />}>
+                    <VideoSummary videoId={currentVideo.id} />
+                  </Suspense>
+                </ErrorBoundary>
               </div>
 
               {/* Quiz — Order swapped to be below VideoSummary */}
               <div className="mt-8">
-                <VideoQuiz videoId={currentVideo.id} />
+                <ErrorBoundary title="Quiz unavailable" resetKey={`quiz-${currentVideo.id}`}>
+                  <Suspense fallback={<PanelLoader label="Loading quiz..." />}>
+                    <VideoQuiz videoId={currentVideo.id} />
+                  </Suspense>
+                </ErrorBoundary>
               </div>
 
               {currentVideo.description && (
@@ -354,10 +375,14 @@ export default function CourseView() {
 
               <div className="mt-8 grid gap-6 grid-cols-1 lg:grid-cols-2">
                 <div className="animate-slide-up h-full" style={{ animationDelay: '100ms' }}>
-                  <VideoNotes videoId={currentVideo.id} />
+                  <Suspense fallback={<PanelLoader label="Loading notes..." />}>
+                    <VideoNotes videoId={currentVideo.id} />
+                  </Suspense>
                 </div>
                 <div className="animate-slide-up h-full" style={{ animationDelay: '200ms' }}>
-                  <VideoBookmarks videoId={currentVideo.id} youtubeId={currentVideo.youtube_id} />
+                  <Suspense fallback={<PanelLoader label="Loading bookmarks..." />}>
+                    <VideoBookmarks videoId={currentVideo.id} youtubeId={currentVideo.youtube_id} />
+                  </Suspense>
                 </div>
               </div>
             </div>
@@ -381,12 +406,11 @@ export default function CourseView() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
           <div className="absolute right-0 top-0 h-full w-80 shadow-2xl slide-in-from-right">
             <VideoSidebar
-              courseId={course.id}
               modules={modules}
               videos={videos}
               progress={progress}
               currentVideoId={currentVideoId}
-              onSelectVideo={(id) => { setCurrentVideoId(id); setSidebarOpen(false); }}
+              onSelectVideo={(id) => { setSelectedVideoId(id); setSidebarOpen(false); }}
               onClose={() => setSidebarOpen(false)}
             />
           </div>
@@ -397,18 +421,27 @@ export default function CourseView() {
       {desktopSidebarOpen && (
         <div className="hidden lg:block w-80 shrink-0 z-10 border-l border-outline-variant bg-surface shadow-xl">
           <VideoSidebar
-            courseId={course.id}
             modules={modules}
             videos={videos}
             progress={progress}
             currentVideoId={currentVideoId}
-            onSelectVideo={setCurrentVideoId}
+            onSelectVideo={setSelectedVideoId}
           />
         </div>
       )}
 
       {/* AI Chat */}
-      {currentVideo && <VideoChat videoId={currentVideo.id} />}
+      {currentVideo && (
+        <ErrorBoundary
+          title="AI tutor unavailable"
+          resetKey={`chat-${currentVideo.id}`}
+          className="fixed bottom-24 right-4 z-50 w-[calc(100vw-2rem)] sm:bottom-8 sm:right-8 sm:w-96"
+        >
+          <Suspense fallback={null}>
+            <VideoChat videoId={currentVideo.id} />
+          </Suspense>
+        </ErrorBoundary>
+      )}
     </div>
   );
 }

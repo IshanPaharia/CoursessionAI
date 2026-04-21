@@ -1,31 +1,78 @@
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_TIMEOUT_MS = 30_000;
+
+function createError(message, status) {
+  const error = new Error(message);
+  if (status) error.status = status;
+  return error;
+}
+
+async function postOpenRouter(payload) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) throw createError('OPENROUTER_API_KEY not configured');
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), OPENROUTER_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(OPENROUTER_URL, {
+      method: 'POST',
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': 'https://coursession.ai',
+        'X-Title': 'CoursessionAI',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const rawBody = await res.text();
+    let body = null;
+    if (rawBody) {
+      try {
+        body = JSON.parse(rawBody);
+      } catch (error) {
+        if (res.ok) throw error;
+      }
+    }
+
+    if (!res.ok) {
+      const message = body?.error?.message || `OpenRouter API error: ${res.status}`;
+      throw createError(message, res.status === 429 ? 429 : res.status);
+    }
+
+    if (!body) {
+      throw createError('OpenRouter returned an empty response body', 502);
+    }
+
+    const content = body.choices?.[0]?.message?.content;
+    if (!content?.trim()) {
+      throw createError('OpenRouter returned an empty response', 502);
+    }
+
+    return content;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw createError('OpenRouter request timed out', 504);
+    }
+
+    if (error instanceof SyntaxError) {
+      throw createError('OpenRouter returned invalid JSON', 502);
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 export async function callOpenRouter(prompt, { model = 'anthropic/claude-3-haiku', maxTokens = 1024 } = {}) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) throw new Error('OPENROUTER_API_KEY not configured');
-
-  const res = await fetch(OPENROUTER_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://coursession.ai',
-      'X-Title': 'CoursessionAI',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: maxTokens,
-      messages: [{ role: 'user', content: prompt }],
-    }),
+  return postOpenRouter({
+    model,
+    max_tokens: maxTokens,
+    messages: [{ role: 'user', content: prompt }],
   });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `OpenRouter API error: ${res.status}`);
-  }
-
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content || '';
 }
 
 export async function generateCourseDescription(courseTitle, videoTitles) {
@@ -123,9 +170,6 @@ Write ONLY the summary, no title or extra formatting.`;
 }
 
 export async function chatWithContext(messages, videoTitle, videoDescription) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) throw new Error('OPENROUTER_API_KEY not configured');
-
   const systemMessage = {
     role: 'system',
     content: `You are a helpful AI tutor assisting a student who is watching a video lesson. Answer their questions clearly and concisely. Use the video context to provide relevant answers.
@@ -136,26 +180,9 @@ Video Description: "${videoDescription || 'No description available'}"
 Provide clear, educational responses. If the question is unrelated to the video topic, still try to help but note it's outside the video scope.`,
   };
 
-  const res = await fetch(OPENROUTER_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://coursession.ai',
-      'X-Title': 'CoursessionAI',
-    },
-    body: JSON.stringify({
-      model: 'anthropic/claude-3-haiku',
-      max_tokens: 1024,
-      messages: [systemMessage, ...messages],
-    }),
+  return postOpenRouter({
+    model: 'anthropic/claude-3-haiku',
+    max_tokens: 1024,
+    messages: [systemMessage, ...messages],
   });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `OpenRouter API error: ${res.status}`);
-  }
-
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
 }

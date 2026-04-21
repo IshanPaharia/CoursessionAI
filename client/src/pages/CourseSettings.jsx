@@ -101,7 +101,7 @@ export default function CourseSettings() {
       const { data } = await api.post('/api/ai/generate-description', { courseId: Number(id) });
       setDescription(data.description);
       addToast('Description generated!', 'success');
-    } catch (err) {
+    } catch {
       addToast('Failed to generate description', 'error');
     } finally {
       setGeneratingDesc(false);
@@ -114,7 +114,7 @@ export default function CourseSettings() {
       const { data } = await api.post('/api/ai/generate-chapters', { courseId: Number(id) });
       setChapterSuggestions(data.chapters);
       addToast('Chapters suggested!', 'success');
-    } catch (err) {
+    } catch {
       addToast('Failed to generate chapters', 'error');
     } finally {
       setGeneratingChapters(false);
@@ -131,7 +131,7 @@ export default function CourseSettings() {
       addToast('Chapters applied!', 'success');
       setChapterSuggestions(null);
       queryClient.invalidateQueries({ queryKey: ['course', id] });
-    } catch (err) {
+    } catch {
       addToast('Failed to apply chapters', 'error');
     }
   };
@@ -150,7 +150,7 @@ export default function CourseSettings() {
         }
         queryClient.invalidateQueries({ queryKey: ['course', id] });
         addToast('Video order updated!', 'success');
-      } catch (err) {
+      } catch {
         addToast('Failed to update order', 'error');
       }
     }
@@ -202,12 +202,12 @@ export default function CourseSettings() {
             />
           </div>
           <div>
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-3 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
               <label className="text-sm font-semibold text-on-surface-variant tracking-wide">Description</label>
               <button
                 onClick={handleGenerateDescription}
                 disabled={generatingDesc}
-                className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-md transition-colors disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-1.5 text-xs font-semibold tracking-wide text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-md transition-colors disabled:opacity-50 sm:w-auto"
               >
                 {generatingDesc ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 Generate with AI

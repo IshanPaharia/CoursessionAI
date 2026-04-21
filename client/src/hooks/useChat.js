@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api.js';
+import { toast } from '../lib/toastStore.js';
+
+function getErrorMessage(error, fallback) {
+  return error?.response?.data?.error || error?.message || fallback;
+}
 
 export function useChatHistory(videoId) {
   return useQuery({
@@ -22,6 +27,9 @@ export function useSendMessage(videoId) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chat', videoId] });
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to send message.'));
     },
   });
 }

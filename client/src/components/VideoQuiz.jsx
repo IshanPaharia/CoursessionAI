@@ -4,7 +4,7 @@ import { useQuiz, useGenerateQuiz, useSubmitQuiz } from '../hooks/useQuizzes';
 
 export default function VideoQuiz({ videoId }) {
   const { data, isLoading } = useQuiz(videoId);
-  const generateQuiz = useGenerateQuiz();
+  const { mutate: generateQuiz, isPending: isGeneratingQuiz } = useGenerateQuiz();
   const submitQuiz = useSubmitQuiz();
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -16,18 +16,18 @@ export default function VideoQuiz({ videoId }) {
   const questions = quiz?.questions || [];
 
   useEffect(() => {
-    if (!isLoading && !quiz && !generateQuiz.isPending && !hasGeneratedRef.current[videoId]) {
+    if (!isLoading && !quiz && !isGeneratingQuiz && !hasGeneratedRef.current[videoId]) {
       hasGeneratedRef.current[videoId] = true;
-      generateQuiz.mutate(videoId);
+      generateQuiz(videoId);
     }
-  }, [videoId, isLoading, quiz, generateQuiz.isPending]);
+  }, [videoId, isLoading, quiz, isGeneratingQuiz, generateQuiz]);
 
   const handleGenerate = (e) => {
     e.stopPropagation();
     setSelectedAnswers({});
     setSubmitted(false);
     setResult(null);
-    generateQuiz.mutate(videoId);
+    generateQuiz(videoId);
     setIsExpanded(true);
   };
 
@@ -70,7 +70,7 @@ export default function VideoQuiz({ videoId }) {
         
         {isExpanded && (
           <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0 border-t border-outline-variant">
-            {(isLoading || generateQuiz.isPending) ? (
+            {(isLoading || isGeneratingQuiz) ? (
               <div className="flex flex-col items-center justify-center py-6 text-center text-on-surface-variant">
                 <Loader2 className="h-8 w-8 animate-spin mb-3 text-primary" />
                 <p className="text-sm font-medium">Generating quiz questions focused on this video...</p>
@@ -102,15 +102,15 @@ export default function VideoQuiz({ videoId }) {
         <div className="flex items-center gap-3">
           <button
             onClick={handleGenerate}
-            disabled={generateQuiz.isPending}
+            disabled={isGeneratingQuiz}
             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-outline-variant hover:bg-surface-container transition-colors disabled:opacity-50"
           >
-            {generateQuiz.isPending ? (
+            {isGeneratingQuiz ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
               <RotateCcw className="h-3.5 w-3.5" />
             )}
-            {generateQuiz.isPending ? 'Generating...' : 'New Quiz'}
+            {isGeneratingQuiz ? 'Generating...' : 'New Quiz'}
           </button>
           <div className="text-on-surface-variant p-1 rounded-sm group-hover:bg-surface-container transition-colors">
             {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
@@ -181,15 +181,15 @@ export default function VideoQuiz({ videoId }) {
           {/* Mobile generated button */}
           <button
             onClick={handleGenerate}
-            disabled={generateQuiz.isPending}
+            disabled={isGeneratingQuiz}
             className="mt-4 sm:hidden flex w-full items-center justify-center gap-2 border border-outline-variant bg-surface px-4 py-3 text-sm font-medium rounded-md hover:bg-surface-container transition-colors disabled:opacity-50"
           >
-            {generateQuiz.isPending ? (
+            {isGeneratingQuiz ? (
               <Loader2 className="h-4 w-4 animate-spin text-on-surface-variant" />
             ) : (
               <RotateCcw className="h-4 w-4 text-on-surface-variant" />
             )}
-            {generateQuiz.isPending ? 'Generating...' : 'New Quiz'}
+            {isGeneratingQuiz ? 'Generating...' : 'New Quiz'}
           </button>
         </div>
       )}

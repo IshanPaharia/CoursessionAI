@@ -9,12 +9,15 @@ export default function VideoNotes({ videoId }) {
   const [dirty, setDirty] = useState(false);
   const timerRef = useRef(null);
 
+  // Server note changes should replace the local draft when a new video loads.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (savedNotes !== undefined) {
       setNotes(savedNotes);
       setDirty(false);
     }
   }, [savedNotes]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };

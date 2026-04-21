@@ -68,7 +68,7 @@ export default function Dashboard() {
           value={playlistUrl}
           onChange={(e) => setPlaylistUrl(e.target.value)}
           placeholder="https://www.youtube.com/playlist?list=..."
-          className="input-field flex-1"
+          className="input-field flex-1 text-sm sm:text-base"
           disabled={createCourse.isPending}
         />
         <button
@@ -81,7 +81,8 @@ export default function Dashboard() {
           ) : (
             <Plus className="h-5 w-5" />
           )}
-          ADD COURSE
+          <span className="sm:hidden">ADD</span>
+          <span className="hidden sm:inline">ADD COURSE</span>
         </button>
       </form>
 
@@ -127,7 +128,7 @@ export default function Dashboard() {
             <div key={tag.id} className="group/tag relative flex items-center">
               <button
                 onClick={() => setSelectedTag(selectedTag === tag.id ? null : tag.id)}
-                className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors border ${
+                className={`flex max-w-full items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors border ${
                   selectedTag === tag.id
                     ? 'bg-primary text-on-primary border-primary'
                     : 'bg-surface text-on-surface hover:bg-surface-container border-outline-variant'
@@ -150,12 +151,12 @@ export default function Dashboard() {
               </button>
             </div>
           ))}
-          <form onSubmit={handleCreateTag} className="flex items-center gap-2 ml-1">
+          <form onSubmit={handleCreateTag} className="ml-0 flex min-w-0 flex-1 items-center gap-2 sm:ml-1 sm:flex-none">
             <input
               value={newTagName}
               onChange={(e) => setNewTagName(e.target.value)}
               placeholder="New Tag..."
-              className="w-28 rounded-md border border-outline-variant bg-surface px-3 py-2 text-sm font-medium text-on-surface outline-none transition-all focus:border-primary focus:w-32"
+              className="min-w-0 flex-1 rounded-md border border-outline-variant bg-surface px-3 py-2 text-sm font-medium text-on-surface outline-none transition-all focus:border-primary sm:w-28 sm:flex-none sm:focus:w-32"
             />
             <button
               type="submit"

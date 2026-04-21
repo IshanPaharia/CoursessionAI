@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api.js';
+import { toast } from '../lib/toastStore.js';
+
+function getErrorMessage(error, fallback) {
+  return error?.response?.data?.error || error?.message || fallback;
+}
 
 export function useCourses(search, tag) {
   return useQuery({
@@ -23,8 +28,16 @@ export function useCreateCourse() {
       const { data } = await api.post('/api/courses', { playlistUrl });
       return data;
     },
+    onMutate: () => toast.loading('Creating course...'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
+      toast.success('Course created.');
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to create course.'));
+    },
+    onSettled: (_data, _error, _variables, toastId) => {
+      toast.dismiss(toastId);
     },
   });
 }
@@ -48,8 +61,16 @@ export function useDeleteCourse() {
       const { data } = await api.delete(`/api/courses/${id}`);
       return data;
     },
+    onMutate: () => toast.loading('Deleting course...'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
+      toast.success('Course deleted.');
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to delete course.'));
+    },
+    onSettled: (_data, _error, _variables, toastId) => {
+      toast.dismiss(toastId);
     },
   });
 }
