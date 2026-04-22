@@ -1,27 +1,15 @@
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
 const TIMEOUT_MS = 30_000;
 
-// OpenRouter free models — all share ONE daily quota per account.
-// If the quota is exhausted, ALL of these will 429. Gemini is the true fallback.
-const OPENROUTER_MODELS = [
-  'openrouter/free',                        // auto-routes to best available free model
-  'nvidia/nemotron-3-super-120b-a12b:free', // 120B MoE, 1M ctx — #1 ranked
-  'openai/gpt-oss-120b:free',               // OpenAI open-weight 117B MoE
-  'google/gemma-4-31b-it:free',             // Google Gemma 4, 256K ctx
-  'meta-llama/llama-3.3-70b-instruct:free', // Llama 3.3 70B, reliable
-  'qwen/qwen3-coder:free',                  // Qwen3 Coder 480B, great for code
-];
-
-// Gemini free tier (completely separate quota from OpenRouter — no credit card needed):
+// Gemini models (free tier):
 //   Flash-Lite: 15 RPM, 1000 RPD  ← high volume, good quality
 //   Flash:      10 RPM,  250 RPD  ← better quality
 const GEMINI_MODELS = [
-  'gemini-2.5-flash-lite', // highest free quota — use first
-  'gemini-2.5-flash', // mid-tier, better quality
-  'gemini-2.0-flash-lite', // broader compatibility fallback
+  'gemini-2.0-flash-lite', // reliable free tier
+  'gemini-1.5-flash',      // standard flash
+  'gemini-1.5-flash-8b',   // lightweight
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -41,15 +29,6 @@ function isRetryableError(error) {
     || message.includes('no endpoints found')
     || message.includes('model not found')
     || message.includes('not available')
-  );
-}
-
-function isQuotaExhausted(error) {
-  // OpenRouter's account-level daily free quota — affects ALL free models at once
-  const message = String(error?.message || '').toLowerCase();
-  return (
-    error?.status === 429
-    && (message.includes('free-models-per-day') || message.includes('rate limit exceeded'))
   );
 }
 
@@ -83,86 +62,12 @@ function extractJSON(response, description) {
   return JSON.parse(match[0]);
 }
 
-// ─── OpenRouter ───────────────────────────────────────────────────────────────
-
-async function callOpenRouterModel(payload) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) throw createError('OPENROUTER_API_KEY not configured');
-
-  const res = await fetchWithTimeout(OPENROUTER_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://coursession.ai',
-      'X-Title': 'CoursessionAI',
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const body = parseBody(await res.text(), res.status);
-
-  if (!res.ok) {
-    const message = body?.error?.message || `OpenRouter error: ${res.status}`;
-    throw createError(message, res.status);
-  }
-
-  const content = body?.choices?.[0]?.message?.content;
-  if (!content?.trim()) throw createError('OpenRouter returned empty content', 502);
-  return content;
-}
-
-/**
- * Returns the response string, or null if the account-level free quota is exhausted
- * (so the caller can fall through to Gemini).
- */
-async function tryOpenRouter(payload, preferredModel) {
-  const models = [
-    preferredModel,
-    process.env.OPENROUTER_MODEL,
-    ...(process.env.OPENROUTER_FALLBACK_MODELS || '').split(','),
-    ...OPENROUTER_MODELS,
-  ].map(m => m?.trim()).filter(Boolean);
-
-  const uniqueModels = [...new Set(models)];
-  let lastError = null;
-
-  for (const model of uniqueModels) {
-    try {
-      return await callOpenRouterModel({ ...payload, model });
-    } catch (error) {
-      lastError = error;
-
-      if (isQuotaExhausted(error)) {
-        // Account-level daily cap hit — no point trying more models on OpenRouter
-        console.warn('OpenRouter daily free quota exhausted — switching to Gemini fallback');
-        return null;
-      }
-
-      if (!isRetryableError(error)) throw error;
-
-      console.warn(`OpenRouter model failed, trying next: ${model}`, {
-        status: error.status,
-        message: error.message,
-      });
-    }
-  }
-
-  // All models tried, last error was not quota-related
-  if (lastError?.status === 429) return null; // Still a rate limit — let Gemini try
-  throw createError(
-    'All OpenRouter models unavailable. Please try again shortly.',
-    lastError?.status ?? 502
-  );
-}
-
-// ─── Gemini Fallback ──────────────────────────────────────────────────────────
+// ─── Gemini ───────────────────────────────────────────────────────────────────
 
 async function callGeminiModel(payload, model) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw createError('GEMINI_API_KEY not configured');
 
-  // Gemini's OpenAI-compatible endpoint uses Bearer auth, matching the official REST examples.
   const res = await fetchWithTimeout(GEMINI_URL, {
     method: 'POST',
     headers: {
@@ -205,47 +110,30 @@ async function tryGemini(payload) {
   }
 
   throw createError(
-    'All Gemini models unavailable. Please try again shortly.',
+    'All AI models unavailable. Please try again later.',
     lastError?.status === 429 ? 429 : 502
   );
 }
 
-// ─── Unified Entry Point ──────────────────────────────────────────────────────
+// ─── Entry Point ─────────────────────────────────────────────────────────────
 
-/**
- * Try OpenRouter first (free tier). If its daily quota is exhausted,
- * automatically fall back to Google Gemini (separate free quota).
- */
-async function post(payload, preferredModel) {
-  // 1. Try OpenRouter (skip gracefully if API key not set)
-  if (process.env.OPENROUTER_API_KEY) {
-    const result = await tryOpenRouter(payload, preferredModel);
-    if (result !== null) return result;
-  }
-
-  // 2. Fall back to Gemini
+async function post(payload) {
   if (!process.env.GEMINI_API_KEY) {
-    throw createError(
-      'OpenRouter daily free quota exhausted and GEMINI_API_KEY is not set. ' +
-      'Get a free key at https://aistudio.google.com and add it to your .env as GEMINI_API_KEY.',
-      429
-    );
+    throw createError('GEMINI_API_KEY is not set. Get a free key at https://aistudio.google.com', 500);
   }
-
-  console.info('Using Gemini API fallback');
   return tryGemini(payload);
 }
 
 // ─── Public Functions ─────────────────────────────────────────────────────────
 
-export async function callAI(prompt, { model, maxTokens = 1024 } = {}) {
-  return post(
-    { max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] },
-    model
-  );
+export async function callAI(prompt, { maxTokens = 1024 } = {}) {
+  return post({ 
+    max_tokens: maxTokens, 
+    messages: [{ role: 'user', content: prompt }] 
+  });
 }
 
-// Legacy alias so existing imports of callOpenRouter still work
+// Keep legacy export for now to avoid breaking imports immediately
 export { callAI as callOpenRouter };
 
 export async function generateCourseDescription(courseTitle, videoTitles) {

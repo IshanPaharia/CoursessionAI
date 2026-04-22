@@ -29,7 +29,7 @@ export function useGenerateQuiz() {
       queryClient.invalidateQueries({ queryKey: ['quiz'] });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, 'Failed to generate quiz.'));
+      toast.error(getErrorMessage(error, 'AI service busy. Please try again later.'));
     },
   });
 }

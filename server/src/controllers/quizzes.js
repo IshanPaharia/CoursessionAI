@@ -1,5 +1,5 @@
 import sql from '../db/index.js';
-import { generateQuizQuestions } from '../services/openrouter.js';
+import { generateQuizQuestions } from '../services/gemini.js';
 
 export async function generateQuiz(req, res, next) {
   try {

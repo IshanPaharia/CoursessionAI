@@ -115,7 +115,7 @@ export default function CourseSettings() {
       setDescription(data.description);
       addToast('Description generated!', 'success');
     } catch {
-      addToast('Failed to generate description', 'error');
+      addToast('AI service busy. Please try again later.', 'error');
     } finally {
       setGeneratingDesc(false);
     }
@@ -128,7 +128,7 @@ export default function CourseSettings() {
       setChapterSuggestions(data.chapters);
       addToast('Chapters suggested!', 'success');
     } catch {
-      addToast('Failed to generate chapters', 'error');
+      addToast('AI service busy. Please try again later.', 'error');
     } finally {
       setGeneratingChapters(false);
     }

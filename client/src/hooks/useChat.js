@@ -29,7 +29,7 @@ export function useSendMessage(videoId) {
       queryClient.invalidateQueries({ queryKey: ['chat', videoId] });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, 'Failed to send message.'));
+      toast.error(getErrorMessage(error, 'AI service busy. Please try again later.'));
     },
   });
 }

@@ -1,5 +1,5 @@
 import sql from '../db/index.js';
-import { chatWithContext } from '../services/openrouter.js';
+import { chatWithContext } from '../services/gemini.js';
 
 export async function sendMessage(req, res, next) {
   try {

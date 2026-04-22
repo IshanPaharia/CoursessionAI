@@ -1,5 +1,5 @@
 import sql from '../db/index.js';
-import { generateVideoSummary } from '../services/openrouter.js';
+import { generateVideoSummary } from '../services/gemini.js';
 
 export async function generateSummary(req, res, next) {
   try {

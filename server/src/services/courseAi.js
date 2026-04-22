@@ -1,5 +1,5 @@
 import sql from '../db/index.js';
-import { generateChapterSuggestions, generateVideoOrder } from './openrouter.js';
+import { generateChapterSuggestions, generateVideoOrder } from './gemini.js';
 
 async function assertCourseOwnership(courseId, userId) {
   const rows = await sql`

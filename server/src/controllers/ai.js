@@ -1,5 +1,5 @@
 import sql from '../db/index.js';
-import { generateCourseDescription } from '../services/openrouter.js';
+import { generateCourseDescription } from '../services/gemini.js';
 import {
   applyChapterSuggestions,
   buildChapterSuggestions,

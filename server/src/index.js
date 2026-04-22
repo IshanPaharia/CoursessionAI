@@ -99,14 +99,18 @@ app.get('/api/health', async (_req, res) => {
 });
 
 function isNeonError(err) {
-  const name = String(err?.name || '').toLowerCase();
   const message = String(err?.message || '').toLowerCase();
   const code = err?.code || err?.cause?.code;
 
+  // Don't treat actual Postgres query errors (like unique constraint violations) as connection timeouts
+  // Postgres error codes are 5 characters (e.g. '23505').
+  if (typeof err?.code === 'string' && err.code.length === 5) {
+    return false;
+  }
+
   return (
-    name.includes('neon')
-    || message.includes('neon')
-    || message.includes('database')
+    message.includes('fetch failed')
+    || message.includes('timeout')
     || code === 'UND_ERR_CONNECT_TIMEOUT'
     || code === 'ECONNRESET'
     || code === 'ECONNREFUSED'

@@ -29,7 +29,7 @@ export function useGenerateSummary() {
       queryClient.invalidateQueries({ queryKey: ['summary', videoId] });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, 'Failed to generate summary.'));
+      toast.error(getErrorMessage(error, 'AI service busy. Please try again later.'));
     },
   });
 }
