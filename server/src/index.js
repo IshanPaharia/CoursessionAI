@@ -140,6 +140,7 @@ app.use((err, _req, res, _next) => {
   if (isNeonError(err)) {
     return res.status(503).json({
       error: 'Database temporarily unavailable. Please try again.',
+      details: err.message,
     });
   }
 
