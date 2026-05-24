@@ -8,8 +8,9 @@ const TIMEOUT_MS = 30_000;
 //   Flash:      10 RPM,  250 RPD  ← better quality
 const GEMINI_MODELS = [
   'gemini-2.0-flash-lite', // reliable free tier
-  'gemini-1.5-flash',      // standard flash
-  'gemini-1.5-flash-8b',   // lightweight
+  'gemini-3.1-flash-lite', // active lightweight fallback (separate quota)
+  'gemini-2.5-flash',      // standard flash
+  'gemini-3.5-flash',      // latest capable model
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
