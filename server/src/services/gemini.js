@@ -7,10 +7,8 @@ const TIMEOUT_MS = 30_000;
 //   Flash-Lite: 15 RPM, 1000 RPD  ← high volume, good quality
 //   Flash:      10 RPM,  250 RPD  ← better quality
 const GEMINI_MODELS = [
-  'gemini-2.0-flash-lite', // reliable free tier, fast
-  'gemini-2.0-flash',      // standard flash
-  'gemini-1.5-flash',      // robust fallback
-  'gemini-1.5-pro',        // high-capability fallback
+  'gemini-3.1-flash-lite', // primary model (active project quota)
+  'gemini-3.5-flash',      // secondary fallback
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
