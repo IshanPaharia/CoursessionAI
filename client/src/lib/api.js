@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
 
 if (!API_URL) {
-  throw new Error('VITE_API_URL is required');
+  throw new Error('VITE_API_URL is not set. Set this environment variable before deploying.');
 }
 
 const api = axios.create({

@@ -107,19 +107,22 @@ export default function LandingPage() {
               {
                 title: 'Course dashboard',
                 label: 'Playlist courses, tags, progress',
+                desc: 'Track your enrolled courses, organize playlists with custom tags, and monitor your overall learning progress in one unified view.',
                 icon: <BarChart3 className="h-8 w-8 text-primary" />,
               },
               {
                 title: 'Course player',
                 label: 'Video, chapters, notes, bookmarks',
+                desc: 'Watch video lessons with automatic chapter markers, take time-stamped notes, and bookmark key moments to return to later.',
                 icon: <Play className="h-8 w-8 text-primary" />,
               },
               {
                 title: 'AI study tools',
                 label: 'Summary, quiz, tutor chat',
+                desc: 'Generate instant lesson summaries, test your comprehension with interactive quizzes, and chat with an AI tutor for personalized help.',
                 icon: <Bookmark className="h-8 w-8 text-primary" />,
               },
-            ].map(({ title, label, icon }) => (
+            ].map(({ title, label, desc, icon }) => (
               <div key={title} className="learning-card bg-surface p-0 overflow-hidden">
                 <div className="aspect-[4/3] border-b border-outline-variant bg-surface-container-low p-4">
                   <div className="flex h-full w-full items-center justify-center rounded-md border border-dashed border-outline bg-surface text-on-surface-variant">
@@ -132,7 +135,7 @@ export default function LandingPage() {
                 <div className="p-6">
                   <h3 className="font-display text-2xl font-bold mb-3">{title}</h3>
                   <p className="text-on-surface-variant font-medium leading-relaxed">
-                    A focused workspace for watching, reviewing, and studying each course.
+                    {desc}
                   </p>
                 </div>
               </div>

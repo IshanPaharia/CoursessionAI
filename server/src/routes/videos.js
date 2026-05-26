@@ -12,12 +12,23 @@ router.put('/:id', async (req, res, next) => {
 
     if (moduleId) {
       const moduleRows = await sql`
-        SELECT m.id FROM modules m
+        SELECT m.id, m.course_id FROM modules m
         JOIN courses c ON c.id = m.course_id
         WHERE m.id = ${moduleId} AND c.user_id = ${req.userId}
       `;
       if (moduleRows.length === 0) {
         return res.status(400).json({ error: 'Invalid module selection' });
+      }
+
+      const integrityRows = await sql`
+        SELECT m.id FROM modules m
+        JOIN videos v ON v.course_id = m.course_id
+        WHERE m.id = ${moduleId}
+          AND v.id = ${req.params.id}
+          AND m.course_id = (SELECT course_id FROM videos WHERE id = ${req.params.id})
+      `;
+      if (integrityRows.length === 0) {
+        return res.status(403).json({ error: 'Module does not belong to the same course as the video' });
       }
     }
 
