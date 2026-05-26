@@ -82,6 +82,13 @@ export async function untagCourse(req, res, next) {
   try {
     const { tagId, courseId } = req.params;
 
+    // Verify ownership
+    const tagRows = await sql`SELECT id FROM tags WHERE id = ${tagId} AND user_id = ${req.userId}`;
+    if (tagRows.length === 0) return res.status(404).json({ error: 'Tag not found' });
+
+    const courseRows = await sql`SELECT id FROM courses WHERE id = ${courseId} AND user_id = ${req.userId}`;
+    if (courseRows.length === 0) return res.status(404).json({ error: 'Course not found' });
+
     await sql`
       DELETE FROM course_tags
       WHERE course_id = ${courseId} AND tag_id = ${tagId}

@@ -1,4 +1,4 @@
-import sql from '../db/index.js';
+import sql, { transaction } from '../db/index.js';
 import { generateChapterSuggestions, generateVideoOrder } from './gemini.js';
 
 async function assertCourseOwnership(courseId, userId) {
@@ -84,25 +84,27 @@ export async function applyChapterSuggestions(courseId, userId, chapters) {
     return { modules, videos };
   }
 
-  await sql`DELETE FROM modules WHERE course_id = ${courseId}`;
+  await transaction(async (tx) => {
+    await tx`DELETE FROM modules WHERE course_id = ${courseId}`;
 
-  for (let i = 0; i < chapters.length; i++) {
-    const ch = chapters[i];
-    const modRows = await sql`
-      INSERT INTO modules (course_id, title, order_index)
-      VALUES (${courseId}, ${ch.title}, ${i})
-      RETURNING id
-    `;
+    for (let i = 0; i < chapters.length; i++) {
+      const ch = chapters[i];
+      const modRows = await tx`
+        INSERT INTO modules (course_id, title, order_index)
+        VALUES (${courseId}, ${ch.title}, ${i})
+        RETURNING id
+      `;
 
-    if (ch.videoIds?.length > 0) {
-      for (const videoId of ch.videoIds) {
-        await sql`
-          UPDATE videos SET module_id = ${modRows[0].id}
-          WHERE id = ${videoId} AND course_id = ${courseId}
-        `;
+      if (ch.videoIds?.length > 0) {
+        for (const videoId of ch.videoIds) {
+          await tx`
+            UPDATE videos SET module_id = ${modRows[0].id}
+            WHERE id = ${videoId} AND course_id = ${courseId}
+          `;
+        }
       }
     }
-  }
+  });
 
   const modules = await sql`
     SELECT * FROM modules WHERE course_id = ${courseId} ORDER BY order_index

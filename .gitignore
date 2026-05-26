@@ -1,56 +1,31 @@
 # Dependencies
 node_modules/
-.pnp
-.pnp.js
 
-# Testing
-coverage/
+# Environment files
+.env
+.env.*
+!.env.example
 
-# Production Builds
-build/
+# Build output and caches
 dist/
-dist-ssr/
-out/
-client/dist/
+build/
+coverage/
+.vite/
+.eslintcache
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-# Environment Variables (Secrets)
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.env
-*.env.local
+# Deployment metadata
+.vercel/
 
-# System Files
+# OS and editor files
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# IDEs and Editors
-.vscode/*
-!.vscode/extensions.json
+.vscode/
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
 
-# Caches & Tooling
-.eslintcache
-.vite/
-.npm/
-
-# Vercel Deployment
-.vercel/
-.vercel
+interview_study/

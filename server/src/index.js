@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import './env.js';
 import express from 'express';
 import sql from './db/index.js';
 import cors from 'cors';
@@ -21,17 +21,26 @@ import certificateRoutes from './routes/certificates.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const CLIENT_URL = process.env.CLIENT_URL?.trim();
+
+if (!CLIENT_URL) {
+  throw new Error('CLIENT_URL is required');
+}
 
 if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
 app.use(cors({
-  origin: (process.env.CLIENT_URL || 'http://localhost:5173').trim(),
+  origin: CLIENT_URL,
   credentials: true,
 }));
 
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -43,7 +52,7 @@ app.use('/api/', limiter);
 
 const aiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: Number(process.env.AI_RATE_LIMIT_MAX),
+  max: Number(process.env.AI_RATE_LIMIT_MAX || 20),
   standardHeaders: true,
   legacyHeaders: false,
   message: {

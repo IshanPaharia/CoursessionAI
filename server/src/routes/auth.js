@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { Webhook } from 'svix';
+import { getAuth } from '@clerk/express';
 import sql from '../db/index.js';
 
 const router = Router();
@@ -24,7 +25,8 @@ router.post('/callback', async (req, res) => {
   let event;
 
   try {
-    event = wh.verify(JSON.stringify(req.body), {
+    const payload = req.rawBody ? req.rawBody.toString('utf8') : JSON.stringify(req.body);
+    event = wh.verify(payload, {
       'svix-id': svixId,
       'svix-timestamp': svixTimestamp,
       'svix-signature': svixSignature,
@@ -62,10 +64,15 @@ router.post('/callback', async (req, res) => {
 
 router.post('/sync', async (req, res, next) => {
   try {
-    const { clerkId, email } = req.body;
+    const { userId: clerkId } = getAuth(req);
+    const { email } = req.body;
 
-    if (!clerkId || !email) {
-      return res.status(400).json({ error: 'clerkId and email are required' });
+    if (!clerkId) {
+      return res.status(401).json({ error: 'Unauthorized', code: 'UNAUTHENTICATED' });
+    }
+
+    if (!email) {
+      return res.status(400).json({ error: 'email is required' });
     }
 
     const rows = await sql`

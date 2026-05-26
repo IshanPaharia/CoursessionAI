@@ -9,8 +9,18 @@ function formatDate(date) {
   });
 }
 
+function escapeHtml(text) {
+  if (typeof text !== 'string') return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function CertificateCard({ certificate }) {
-  const shareUrl = `${window.location.origin}/api/certificates/public/${certificate.certificate_uid}`;
+  const shareUrl = `${window.location.origin}/certificates/public/${certificate.certificate_uid}`;
 
   const handleShare = () => {
     if (navigator.share) {
@@ -31,7 +41,7 @@ function CertificateCard({ certificate }) {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Certificate - ${certificate.course_title}</title>
+        <title>Certificate - ${escapeHtml(certificate.course_title)}</title>
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
           * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -106,11 +116,11 @@ function CertificateCard({ certificate }) {
           <h1>CoursessionAI</h1>
           <div class="divider"></div>
           <p style="margin: 16px 0 8px; color: #6b7280; font-size: 14px; font-weight: 500;">This certifies that</p>
-          <p class="name">${certificate.display_name || certificate.email}</p>
+          <p class="name">${escapeHtml(certificate.display_name || certificate.email)}</p>
           <p style="color: #6b7280; margin-bottom: 8px; font-size: 14px; font-weight: 500;">has successfully completed</p>
-          <p class="course">${certificate.course_title}</p>
-          <p class="date">${formatDate(certificate.completed_at)}</p>
-          <p class="id">Certificate ID: ${certificate.certificate_uid}</p>
+          <p class="course">${escapeHtml(certificate.course_title)}</p>
+          <p class="date">${escapeHtml(formatDate(certificate.completed_at))}</p>
+          <p class="id">Certificate ID: ${escapeHtml(certificate.certificate_uid)}</p>
         </div>
       </body>
       </html>

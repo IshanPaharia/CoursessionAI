@@ -57,21 +57,25 @@ export async function deleteModule(req, res, next) {
   try {
     const { id } = req.params;
 
+    // Verify module ownership first
+    const moduleRows = await sql`
+      SELECT m.id FROM modules m
+      JOIN courses c ON c.id = m.course_id
+      WHERE m.id = ${id} AND c.user_id = ${req.userId}
+    `;
+    if (moduleRows.length === 0) {
+      return res.status(404).json({ error: 'Module not found or access denied' });
+    }
+
     await sql`
       UPDATE videos SET module_id = NULL
       WHERE module_id = ${id}
     `;
 
-    const rows = await sql`
+    await sql`
       DELETE FROM modules
       WHERE id = ${id}
-        AND course_id IN (SELECT id FROM courses WHERE user_id = ${req.userId})
-      RETURNING id
     `;
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Module not found' });
-    }
 
     res.json({ deleted: true });
   } catch (err) {

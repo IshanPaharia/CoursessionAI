@@ -1,4 +1,4 @@
-import sql from '../db/index.js';
+import sql, { transaction } from '../db/index.js';
 import {
   extractPlaylistId,
   fetchPlaylistDetails,
@@ -104,46 +104,51 @@ export async function createCourse(req, res, next) {
     const shouldReorderVideos = toBool(aiGenerateVideoOrder);
     const shouldGenerateChapters = toBool(aiGenerateChapters);
 
-    const courseRows = await sql`
-      INSERT INTO courses (
-        user_id,
-        playlist_url,
-        title,
-        description,
-        thumbnail_url,
-        ai_generate_video_order,
-        ai_generate_chapters
-      )
-      VALUES (
-        ${req.userId},
-        ${playlistUrl},
-        ${details.title},
-        ${details.description},
-        ${details.thumbnailUrl},
-        ${shouldReorderVideos},
-        ${shouldGenerateChapters}
-      )
-      RETURNING *
-    `;
-    const course = courseRows[0];
+    let course;
+    let mod;
 
-    const moduleRows = await sql`
-      INSERT INTO modules (course_id, title, order_index)
-      VALUES (${course.id}, ${'All Videos'}, ${0})
-      RETURNING *
-    `;
-    const mod = moduleRows[0];
-
-    for (const item of items) {
-      await sql`
-        INSERT INTO videos (course_id, module_id, youtube_id, title, description, duration, thumbnail_url, order_index)
-        VALUES (
-          ${course.id}, ${mod.id}, ${item.youtubeId}, ${item.title},
-          ${item.description}, ${durations[item.youtubeId] || 0},
-          ${item.thumbnailUrl}, ${item.position}
+    await transaction(async (tx) => {
+      const courseRows = await tx`
+        INSERT INTO courses (
+          user_id,
+          playlist_url,
+          title,
+          description,
+          thumbnail_url,
+          ai_generate_video_order,
+          ai_generate_chapters
         )
+        VALUES (
+          ${req.userId},
+          ${playlistUrl},
+          ${details.title},
+          ${details.description},
+          ${details.thumbnailUrl},
+          ${shouldReorderVideos},
+          ${shouldGenerateChapters}
+        )
+        RETURNING *
       `;
-    }
+      course = courseRows[0];
+
+      const moduleRows = await tx`
+        INSERT INTO modules (course_id, title, order_index)
+        VALUES (${course.id}, ${'All Videos'}, ${0})
+        RETURNING *
+      `;
+      mod = moduleRows[0];
+
+      for (const item of items) {
+        await tx`
+          INSERT INTO videos (course_id, module_id, youtube_id, title, description, duration, thumbnail_url, order_index)
+          VALUES (
+            ${course.id}, ${mod.id}, ${item.youtubeId}, ${item.title},
+            ${item.description}, ${durations[item.youtubeId] || 0},
+            ${item.thumbnailUrl}, ${item.position}
+          )
+        `;
+      }
+    });
 
     let modules = [mod];
     let videos = await sql`

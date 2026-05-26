@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, X, Loader2, Bot, User } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { useChatHistory, useSendMessage } from '../hooks/useChat';
 
 export default function VideoChat({ videoId }) {
@@ -13,7 +14,7 @@ export default function VideoChat({ videoId }) {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, sendMessage.isPending]);
 
   const handleSend = (e) => {
     e.preventDefault();
@@ -85,7 +86,13 @@ export default function VideoChat({ videoId }) {
                   : 'bg-surface-container text-on-surface border border-outline-variant rounded-tl-sm'
               }`}
             >
-              <p className="whitespace-pre-wrap">{msg.content}</p>
+              {msg.role === 'user' ? (
+                <p className="whitespace-pre-wrap">{msg.content}</p>
+              ) : (
+                <div className="prose dark:prose-invert max-w-none text-on-surface [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-2 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-2 [&>li]:mb-1 [&>strong]:font-bold [&>pre]:bg-surface-container-high [&>pre]:p-2 [&>pre]:rounded-md [&>pre]:my-2 [&>code]:font-mono [&>code]:bg-surface-container-high [&>code]:px-1 [&>code]:rounded">
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                </div>
+              )}
             </div>
           </div>
         ))}

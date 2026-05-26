@@ -5,6 +5,15 @@ export async function saveNote(req, res, next) {
     const { videoId } = req.params;
     const { notes } = req.body;
 
+    const videoRows = await sql`
+      SELECT v.id FROM videos v
+      JOIN courses c ON c.id = v.course_id
+      WHERE v.id = ${videoId} AND c.user_id = ${req.userId}
+    `;
+    if (videoRows.length === 0) {
+      return res.status(404).json({ error: 'Video not found or access denied' });
+    }
+
     const rows = await sql`
       INSERT INTO progress (user_id, video_id, notes)
       VALUES (${req.userId}, ${videoId}, ${notes || ''})
@@ -22,6 +31,15 @@ export async function saveNote(req, res, next) {
 export async function getNote(req, res, next) {
   try {
     const { videoId } = req.params;
+
+    const videoRows = await sql`
+      SELECT v.id FROM videos v
+      JOIN courses c ON c.id = v.course_id
+      WHERE v.id = ${videoId} AND c.user_id = ${req.userId}
+    `;
+    if (videoRows.length === 0) {
+      return res.status(404).json({ error: 'Video not found or access denied' });
+    }
 
     const rows = await sql`
       SELECT notes FROM progress

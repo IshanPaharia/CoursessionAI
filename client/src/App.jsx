@@ -19,6 +19,8 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const CourseView = lazy(() => import('./pages/CourseView'));
 const CourseSettings = lazy(() => import('./pages/CourseSettings'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const PublicCertificate = lazy(() => import('./pages/PublicCertificate'));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,6 +66,7 @@ export default function App() {
                       <Route path="/" element={<LandingPage />} />
                       <Route path="/sign-in/*" element={<SignInPage />} />
                       <Route path="/sign-up/*" element={<SignUpPage />} />
+                      <Route path="/certificates/public/:uid" element={<PublicCertificate />} />
                       <Route
                         path="/dashboard"
                         element={

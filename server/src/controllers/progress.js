@@ -5,9 +5,14 @@ export async function updateProgress(req, res, next) {
     const { videoId } = req.params;
     const { isWatched, notes } = req.body;
 
-    const videoRows = await sql`SELECT id, course_id, duration FROM videos WHERE id = ${videoId}`;
+    const videoRows = await sql`
+      SELECT v.id, v.course_id, v.duration 
+      FROM videos v
+      JOIN courses c ON c.id = v.course_id
+      WHERE v.id = ${videoId} AND c.user_id = ${req.userId}
+    `;
     if (videoRows.length === 0) {
-      return res.status(404).json({ error: 'Video not found' });
+      return res.status(404).json({ error: 'Video not found or access denied' });
     }
 
     const rows = await sql`
