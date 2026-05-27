@@ -42,6 +42,29 @@ app.use(express.json({
   }
 }));
 
+app.get('/api/health', async (_req, res) => {
+  try {
+    // Check DB health
+    await sql`SELECT 1`;
+    
+    res.json({
+      status: 'ok',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      database: 'connected',
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'error',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      database: 'disconnected',
+      error: error.message
+    });
+  }
+});
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
@@ -84,28 +107,6 @@ app.use('/api/tags', tagRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/certificates', certificateRoutes);
 
-app.get('/api/health', async (_req, res) => {
-  try {
-    // Check DB health
-    await sql`SELECT 1`;
-    
-    res.json({
-      status: 'ok',
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString(),
-      database: 'connected',
-      environment: process.env.NODE_ENV || 'development'
-    });
-  } catch (error) {
-    res.status(503).json({
-      status: 'error',
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString(),
-      database: 'disconnected',
-      error: error.message
-    });
-  }
-});
 
 function isNeonError(err) {
   const message = String(err?.message || '').toLowerCase();
