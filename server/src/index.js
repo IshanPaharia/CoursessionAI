@@ -42,27 +42,13 @@ app.use(express.json({
   }
 }));
 
-app.get('/api/health', async (_req, res) => {
-  try {
-    // Check DB health
-    await sql`SELECT 1`;
-    
-    res.json({
-      status: 'ok',
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString(),
-      database: 'connected',
-      environment: process.env.NODE_ENV || 'development'
-    });
-  } catch (error) {
-    res.status(503).json({
-      status: 'error',
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString(),
-      database: 'disconnected',
-      error: error.message
-    });
-  }
+app.get('/api/health', (_req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 const limiter = rateLimit({
